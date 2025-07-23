@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package user.v1;
+
+option go_package = "github.com/HankLin216/connect-go-boilerplate/api/user/v1";
+
+service User {
+  rpc Get (GetRequest) returns (GetResponse) {}
+}
+
+message GetRequest {
+  string name = 1;
+}
+
+message GetResponse {
+  string message = 1;
+}

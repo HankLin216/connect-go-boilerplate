@@ -1,0 +1,85 @@
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.16.1
+    container_name: elasticsearch
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+    environment:
+      - discovery.type=single-node
+      #- ELASTIC_PASSWORD=${ES_LOCAL_PASSWORD}
+      - xpack.security.enabled=false
+      - xpack.security.http.ssl.enabled=false
+      #- xpack.license.self_generated.type=trial
+      - xpack.ml.use_auto_machine_memory_percent=true
+      - ES_JAVA_OPTS=-Xms128m -Xmx2g
+      - cluster.routing.allocation.disk.watermark.low=1gb
+      - cluster.routing.allocation.disk.watermark.high=1gb
+      - cluster.routing.allocation.disk.watermark.flood_stage=1gb
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "curl --output /dev/null --silent --fail http://elasticsearch:9200",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  kibana:
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    image: docker.elastic.co/kibana/kibana:8.16.1
+    container_name: kibana
+    # volumes:
+    #   - dev-kibana:/usr/share/kibana/data
+    ports:
+      - 5601:5601
+    environment:
+      - SERVER_NAME=kibana
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      #- ELASTICSEARCH_USERNAME=kibana_system
+      #- ELASTICSEARCH_PASSWORD=${KIBANA_LOCAL_PASSWORD}
+      #- XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY=${KIBANA_ENCRYPTION_KEY}
+      #- ELASTICSEARCH_PUBLICBASEURL=http://localhost:${ES_LOCAL_PORT}
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "curl -s -I http://kibana:5601 | grep -q 'HTTP/1.1 302 Found'",
+        ]
+      interval: 10s
+      timeout: 10s
+      retries: 20
+  
+  filebeat:
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    image: docker.elastic.co/beats/filebeat:8.16.1
+    container_name: filebeat
+    user: root
+    command:
+      - filebeat
+      - -e
+      - -strict.perms=false
+    volumes:
+      - ./filebeat.docker.yml:/usr/share/filebeat/filebeat.yml:ro
+      #- /mnt/wsl/docker-desktop-data/version-pack-data/community/docker/containers:/var/lib/docker/containers:ro
+      - /mnt/wsl/docker-desktop-data/data/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+  connect-go-boilerplate:
+    image: connect-go-boilerplate:${VERSION}
+    container_name: connect-go-boilerplate
+    ports:
+      - 8000:8000
+      
+volumes:
+  elasticsearch-data:

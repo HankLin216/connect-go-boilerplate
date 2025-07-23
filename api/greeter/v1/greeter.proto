@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package greeter.v1;
+
+option go_package = "github.com/HankLin216/connect-go-boilerplate/api/greeter/v1";
+
+service Greeter {
+  rpc SayHello (HelloRequest) returns (HelloResponse) {}
+}
+
+message HelloRequest {
+  string name = 1;
+}
+
+message HelloResponse {
+  string message = 1;
+}
