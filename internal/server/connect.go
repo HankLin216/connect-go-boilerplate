@@ -15,6 +15,7 @@ func NewConnectServer(c *conf.Server, greeter *service.GreeterService, logger *z
 		connectTransport.Middleware(
 			recovery.Recovery(),
 		),
+		connectTransport.EnableReflection(true), // Enable gRPC reflection
 	}
 
 	// Configure server options from HTTP config
@@ -34,6 +35,12 @@ func NewConnectServer(c *conf.Server, greeter *service.GreeterService, logger *z
 	// Register Connect service
 	path, handler := greeterv1connect.NewGreeterHandler(greeter)
 	srv.RegisterHandler(path, handler)
+
+	// Set up reflection services
+	services := []string{
+		"greeter.v1.Greeter",
+	}
+	srv.SetReflectionServices(services)
 
 	return srv
 }

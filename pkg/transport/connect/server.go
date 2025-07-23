@@ -10,6 +10,7 @@ import (
 	"strings"
 	"time"
 
+	"connectrpc.com/grpcreflect"
 	"github.com/HankLin216/connect-go-boilerplate/pkg/matcher"
 	"github.com/HankLin216/connect-go-boilerplate/pkg/middleware"
 	"github.com/HankLin216/go-utils/log"
@@ -56,6 +57,13 @@ func TLSConfig(c *tls.Config) ServerOption {
 	}
 }
 
+// EnableReflection enables gRPC reflection.
+func EnableReflection(enable bool) ServerOption {
+	return func(s *Server) {
+		s.enableReflection = enable
+	}
+}
+
 // Server is a Connect server wrapper.
 type Server struct {
 	*http.Server
@@ -70,20 +78,23 @@ type Server struct {
 	timeout    time.Duration
 	middleware matcher.Matcher
 
-	mux      *http.ServeMux
-	handlers map[string]http.Handler
+	mux              *http.ServeMux
+	handlers         map[string]http.Handler
+	reflector        *grpcreflect.Reflector
+	enableReflection bool
 }
 
 // NewServer creates a Connect server by options.
 func NewServer(opts ...ServerOption) *Server {
 	srv := &Server{
-		baseCtx:    context.Background(),
-		network:    "tcp",
-		address:    ":0",
-		timeout:    30 * time.Second,
-		middleware: matcher.New(),
-		mux:        http.NewServeMux(),
-		handlers:   make(map[string]http.Handler),
+		baseCtx:          context.Background(),
+		network:          "tcp",
+		address:          ":0",
+		timeout:          30 * time.Second,
+		middleware:       matcher.New(),
+		mux:              http.NewServeMux(),
+		handlers:         make(map[string]http.Handler),
+		enableReflection: false,
 	}
 
 	for _, o := range opts {
@@ -110,8 +121,6 @@ func (s *Server) createHandler() http.Handler {
 // wrapWithMiddleware wraps the handler with Connect middleware integration
 func (s *Server) wrapWithMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		ctx := r.Context()
-
 		// Create transport context
 		tr := &Transport{
 			operation:   s.getOperationFromPath(r.URL.Path),
@@ -123,7 +132,7 @@ func (s *Server) wrapWithMiddleware(next http.Handler) http.Handler {
 		}
 
 		// Set transport in context
-		ctx = s.baseCtx
+		ctx := s.baseCtx
 		if s.timeout > 0 {
 			var cancel context.CancelFunc
 			ctx, cancel = context.WithTimeout(ctx, s.timeout)
@@ -165,6 +174,17 @@ func (s *Server) getOperationFromPath(path string) string {
 func (s *Server) RegisterHandler(pattern string, handler http.Handler) {
 	s.mux.Handle(pattern, handler)
 	s.handlers[pattern] = handler
+}
+
+// SetReflectionServices sets the services for gRPC reflection
+func (s *Server) SetReflectionServices(services []string) {
+	if s.enableReflection {
+		s.reflector = grpcreflect.NewStaticReflector(services...)
+		reflectPath, reflectHandler := grpcreflect.NewHandlerV1(s.reflector)
+		s.mux.Handle(reflectPath, reflectHandler)
+		reflectPathAlpha, reflectHandlerAlpha := grpcreflect.NewHandlerV1Alpha(s.reflector)
+		s.mux.Handle(reflectPathAlpha, reflectHandlerAlpha)
+	}
 }
 
 // Use uses a service middleware with selector.
