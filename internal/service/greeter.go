@@ -6,18 +6,16 @@ import (
 	"connectrpc.com/connect"
 	v1 "github.com/HankLin216/connect-go-boilerplate/api/greeter/v1"
 	"github.com/HankLin216/connect-go-boilerplate/internal/biz"
-	"go.uber.org/zap"
 )
 
 // GreeterService is a greeter service.
 type GreeterService struct {
-	log *zap.Logger
-	uc  *biz.GreeterUsecase
+	uc *biz.GreeterUsecase
 }
 
 // NewGreeterService new a greeter service.
-func NewGreeterService(uc *biz.GreeterUsecase, logger *zap.Logger) *GreeterService {
-	return &GreeterService{log: logger, uc: uc}
+func NewGreeterService(uc *biz.GreeterUsecase) *GreeterService {
+	return &GreeterService{uc: uc}
 }
 
 // SayHello implements Connect-Go GreeterHandler interface

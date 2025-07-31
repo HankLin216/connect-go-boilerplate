@@ -3,7 +3,7 @@ package biz
 import (
 	"context"
 
-	"go.uber.org/zap"
+	"github.com/HankLin216/go-utils/log"
 )
 
 // Greeter is a Greeter model.
@@ -23,16 +23,15 @@ type GreeterRepo interface {
 // GreeterUsecase is a Greeter usecase.
 type GreeterUsecase struct {
 	repo GreeterRepo
-	log  *zap.Logger
 }
 
 // NewGreeterUsecase new a Greeter usecase.
-func NewGreeterUsecase(repo GreeterRepo, logger *zap.Logger) *GreeterUsecase {
-	return &GreeterUsecase{repo: repo, log: logger}
+func NewGreeterUsecase(repo GreeterRepo) *GreeterUsecase {
+	return &GreeterUsecase{repo: repo}
 }
 
 // CreateGreeter creates a Greeter, and returns the new Greeter.
 func (uc *GreeterUsecase) CreateGreeter(ctx context.Context, g *Greeter) (*Greeter, error) {
-	uc.log.Info("CreateGreeter")
+	log.Info("CreateGreeter")
 	return g, nil
 }

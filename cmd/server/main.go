@@ -2,18 +2,20 @@ package main
 
 import (
 	"flag"
+	"net/http"
 	"os"
 	"time"
 
 	"github.com/HankLin216/connect-go-boilerplate/internal/conf"
-	app "github.com/HankLin216/connect-go-boilerplate/pkg/app"
-	connectTransport "github.com/HankLin216/connect-go-boilerplate/pkg/transport/connect"
 	"github.com/HankLin216/go-utils/config"
 	"github.com/HankLin216/go-utils/config/file"
 	"github.com/HankLin216/go-utils/log"
+	"github.com/rs/cors"
 	"go.elastic.co/ecszap"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
+	"golang.org/x/net/http2"
+	"golang.org/x/net/http2/h2c"
 )
 
 var (
@@ -32,17 +34,18 @@ func init() {
 	flag.StringVar(&ConfFolderPath, "ConfFolderPath", ConfFolderPath, "input the config path")
 }
 
-func newApp(cs *connectTransport.Server, logger *zap.Logger) *app.App {
-	return app.New(
-		app.ID(id),
-		app.Name(Name),
-		app.Version(Version),
-		app.Metadata(map[string]string{}),
-		app.Logger(logger),
-		app.Server(
-			cs, // Connect server
+func newApp(mux *http.ServeMux, c *conf.Bootstrap) *http.Server {
+	return &http.Server{
+		Addr: c.Server.Http.Addr,
+		Handler: h2c.NewHandler(
+			cors.AllowAll().Handler(mux),
+			&http2.Server{},
 		),
-	)
+		ReadHeaderTimeout: time.Second,
+		ReadTimeout:       c.Server.Http.Timeout.AsDuration(),
+		WriteTimeout:      c.Server.Http.Timeout.AsDuration(),
+		MaxHeaderBytes:    8 * 1024, // 8KiB
+	}
 }
 
 func main() {
@@ -59,13 +62,6 @@ func main() {
 		zap.AddCaller(),
 	)
 	defer logger.Sync()
-	logger.Info("Server infos",
-		zap.String("Name", Name),
-		zap.String("Version", Version),
-		zap.String("Env", Env),
-		zap.String("ConfigFolderPath", ConfFolderPath),
-		zap.String("BuildTime", BuildTime),
-	)
 
 	// update global logger
 	log.SetLogger(logger)
@@ -87,14 +83,24 @@ func main() {
 		panic(err)
 	}
 
-	app, cleanup, err := wireApp(bc.Server, bc.Data, logger)
+	// start app
+	log.Info("Server infos",
+		zap.String("Name", Name),
+		zap.String("Version", Version),
+		zap.String("Env", Env),
+		zap.String("ConfigFolderPath", ConfFolderPath),
+		zap.String("BuildTime", BuildTime),
+		zap.String("Address", bc.Server.Http.GetAddr()),
+	)
+
+	app, cleanup, err := wireApp(bc.Server, &bc)
 	if err != nil {
 		panic(err)
 	}
 	defer cleanup()
 
 	// start and wait for stop signal
-	if err := app.Run(); err != nil {
+	if err := app.ListenAndServe(); err != nil {
 		panic(err)
 	}
 }

@@ -4,20 +4,16 @@ import (
 	"context"
 
 	"github.com/HankLin216/connect-go-boilerplate/internal/biz"
-
-	"go.uber.org/zap"
 )
 
 type greeterRepo struct {
 	data *Data
-	log  *zap.Logger
 }
 
 // NewGreeterRepo .
-func NewGreeterRepo(data *Data, logger *zap.Logger) biz.GreeterRepo {
+func NewGreeterRepo(data *Data) biz.GreeterRepo {
 	return &greeterRepo{
 		data: data,
-		log:  logger,
 	}
 }
 
