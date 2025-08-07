@@ -121,4 +121,17 @@ help:
 	} \
 	{ lastLine = $$0 }' $(MAKEFILE_LIST)
 
+.PHONY: build-client
+# build simple client
+build-client:
+	@echo "Building simple client..."
+	@go build -o bin/client ./cmd/client
+
+
+.PHONY: run-client
+# run simple client with default settings
+run-client: build-client
+	@echo "Running simple client..."
+	@./bin/client
+
 .DEFAULT_GOAL := help
