@@ -71,15 +71,20 @@ services:
       - -strict.perms=false
     volumes:
       - ./filebeat.docker.yml:/usr/share/filebeat/filebeat.yml:ro
-      #- /mnt/wsl/docker-desktop-data/version-pack-data/community/docker/containers:/var/lib/docker/containers:ro
-      - /mnt/wsl/docker-desktop-data/data/docker/containers:/var/lib/docker/containers:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
-  connect-go-boilerplate:
+  connect-go-boilerplate-1:
     image: connect-go-boilerplate:${VERSION}
-    container_name: connect-go-boilerplate
+    container_name: connect-go-boilerplate-1
     ports:
       - 8000:8000
+      
+  connect-go-boilerplate-2:
+    image: connect-go-boilerplate:${VERSION}
+    container_name: connect-go-boilerplate-2
+    ports:
+      - 8001:8000
       
 volumes:
   elasticsearch-data:
