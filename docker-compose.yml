@@ -44,6 +44,9 @@ services:
     environment:
       - SERVER_NAME=kibana
       - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - XPACK_SECURITY_ENABLED=false
+      - XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY=
+      - ELASTICSEARCH_SECURITY_ENABLED=false
       #- ELASTICSEARCH_USERNAME=kibana_system
       #- ELASTICSEARCH_PASSWORD=${KIBANA_LOCAL_PASSWORD}
       #- XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY=${KIBANA_ENCRYPTION_KEY}
@@ -78,13 +81,26 @@ services:
     image: connect-go-boilerplate:${VERSION}
     container_name: connect-go-boilerplate-1
     ports:
-      - 8000:8000
+      - 9000:9000
       
   connect-go-boilerplate-2:
     image: connect-go-boilerplate:${VERSION}
     container_name: connect-go-boilerplate-2
     ports:
-      - 8001:8000
+      - 9001:9000
+
+  envoy-proxy:
+    image: envoyproxy/envoy:v1.28-latest
+    container_name: envoy-proxy
+    ports:
+      - 80:80
+      - 9901:9901
+    volumes:
+      - ./envoy.yaml:/etc/envoy/envoy.yaml:ro
+    depends_on:
+      - connect-go-boilerplate-1
+      - connect-go-boilerplate-2
+    command: ["/usr/local/bin/envoy", "-c", "/etc/envoy/envoy.yaml"]
       
 volumes:
   elasticsearch-data:
