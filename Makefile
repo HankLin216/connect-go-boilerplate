@@ -86,12 +86,12 @@ dev-build-image:
 .PHONY: run-image
 # run production image
 run-image:
-	docker run -d --rm --name connect-go-boilerplate -p 8000:8000 connect-go-boilerplate:$(VERSION)
+	docker run -d --rm --name connect-go-boilerplate -p 9000:9000 connect-go-boilerplate:$(VERSION)
 
 .PHONY: dev-run-image
 # run development image
 dev-run-image:
-	docker run -d --rm --name connect-go-boilerplate-dev -p 8000:8000 connect-go-boilerplate:$(VERSION)-dev
+	docker run -d --rm --name connect-go-boilerplate-dev -p 9000:9000 connect-go-boilerplate:$(VERSION)-dev
 
 .PHONY: docker-compose
 # run docker-compose
