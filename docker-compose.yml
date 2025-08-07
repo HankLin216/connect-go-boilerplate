@@ -80,14 +80,12 @@ services:
   connect-go-boilerplate-1:
     image: connect-go-boilerplate:${VERSION}
     container_name: connect-go-boilerplate-1
-    ports:
-      - 9000:9000
+    # ports removed - access via envoy proxy only
       
   connect-go-boilerplate-2:
     image: connect-go-boilerplate:${VERSION}
     container_name: connect-go-boilerplate-2
-    ports:
-      - 9001:9000
+    # ports removed - access via envoy proxy only
 
   envoy-proxy:
     image: envoyproxy/envoy:v1.28-latest
