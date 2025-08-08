@@ -63,13 +63,13 @@ static_resources:
           explicit_http_config:
             http2_protocol_options: {}
       health_checks:
-        - timeout: 5s
-          interval: 10s
+        - timeout: 3s
+          interval: 5s
           interval_jitter: 1s
-          unhealthy_threshold: 3
-          healthy_threshold: 2
+          unhealthy_threshold: 2
+          healthy_threshold: 1
           grpc_health_check:
-            service_name: ""
+            service_name: "grpc.health.v1.Health"
           event_log_path: "/dev/stdout"
       load_assignment:
         cluster_name: connect_go_cluster
@@ -84,6 +84,11 @@ static_resources:
                   address:
                     socket_address:
                       address: connect-go-boilerplate-2
+                      port_value: 9000
+              - endpoint:
+                  address:
+                    socket_address:
+                      address: connect-go-boilerplate-3
                       port_value: 9000
 
 admin:
