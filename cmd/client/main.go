@@ -19,7 +19,7 @@ import (
 
 var (
 	serverAddr = flag.String("addr", "http://connect-go.phison.com", "服務器地址")
-	interval   = flag.Duration("interval", 1*time.Second, "調用間隔")
+	interval   = flag.Duration("interval", 300*time.Millisecond, "調用間隔")
 	timeout    = flag.Duration("timeout", 10*time.Second, "請求超時時間")
 	clientName = flag.String("name", "TestClient", "客戶端名稱前綴")
 	enableTLS  = flag.Bool("tls", false, "是否使用 HTTPS")

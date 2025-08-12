@@ -92,18 +92,29 @@ services:
     container_name: connect-go-boilerplate-3
     # ports removed - access via envoy proxy only
 
+  connect-go-boilerplate-4:
+    image: connect-go-boilerplate:${VERSION}
+    container_name: connect-go-boilerplate-4
+    # ports removed - access via envoy proxy only
+
   envoy-proxy:
-    image: envoyproxy/envoy:v1.28-latest
+    image: envoy-with-python:v1.0.0
     container_name: envoy-proxy
     ports:
       - 80:80
       - 9901:9901
     volumes:
-      - ./envoy.yaml:/etc/envoy/envoy.yaml:ro
+      - ./envoy/envoy.yaml:/etc/envoy/envoy.yaml:ro
+    environment:
+      - SERVICE_NODE=envoy-proxy-node
+      - SERVICE_ZONE=docker-compose
+      - RESTART_EPOCH=0
+      - ENVOY_MAX_OPEN_FILES=102400
     depends_on:
       - connect-go-boilerplate-1
       - connect-go-boilerplate-2
-    command: ["/usr/local/bin/envoy", "-c", "/etc/envoy/envoy.yaml"]
+      - connect-go-boilerplate-3
+    command: ["python3", "/usr/local/bin/hot-restarter.py", "/usr/local/bin/start_envoy.sh"]
       
 volumes:
   elasticsearch-data:
