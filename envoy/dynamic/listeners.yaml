@@ -1,0 +1,50 @@
+version_info: "1"
+resources:
+  - "@type": type.googleapis.com/envoy.config.listener.v3.Listener
+    name: listener_0
+    address:
+      socket_address:
+        protocol: TCP
+        address: 0.0.0.0
+        port_value: 80
+    filter_chains:
+      - filters:
+          - name: envoy.filters.network.http_connection_manager
+            typed_config:
+              "@type": type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
+              stat_prefix: ingress_http
+              access_log:
+                - name: envoy.access_loggers.stdout
+                  typed_config:
+                    "@type": type.googleapis.com/envoy.extensions.access_loggers.stream.v3.StdoutAccessLog
+              http_filters:
+                - name: envoy.filters.http.grpc_web
+                  typed_config:
+                    "@type": type.googleapis.com/envoy.extensions.filters.http.grpc_web.v3.GrpcWeb
+                - name: envoy.filters.http.cors
+                  typed_config:
+                    "@type": type.googleapis.com/envoy.extensions.filters.http.cors.v3.Cors
+                - name: envoy.filters.http.router
+                  typed_config:
+                    "@type": type.googleapis.com/envoy.extensions.filters.http.router.v3.Router
+              route_config:
+                name: local_route
+                virtual_hosts:
+                  - name: local_service
+                    domains:
+                      ["connect-go.phison.com", "connect-go.phison.com:80", "*"]
+                    routes:
+                      - match:
+                          prefix: "/"
+                          headers:
+                            - name: "content-type"
+                              string_match:
+                                prefix: "application/grpc"
+                        route:
+                          cluster: connect_go_cluster
+                          timeout: 30s
+                      - match:
+                          prefix: "/"
+                        route:
+                          cluster: connect_go_cluster
+                          timeout: 30s

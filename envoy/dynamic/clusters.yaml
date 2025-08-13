@@ -1,0 +1,36 @@
+version_info: "4"
+resources:
+  - "@type": type.googleapis.com/envoy.config.cluster.v3.Cluster
+    name: connect_go_cluster
+    type: EDS
+    connect_timeout: 5s
+    lb_policy: ROUND_ROBIN
+    eds_cluster_config:
+      eds_config:
+        resource_api_version: V3
+        path_config_source:
+          path: "/etc/envoy/dynamic/endpoints.yaml"
+    # Upstream uses HTTP/2 (gRPC)
+    typed_extension_protocol_options:
+      envoy.extensions.upstreams.http.v3.HttpProtocolOptions:
+        "@type": type.googleapis.com/envoy.extensions.upstreams.http.v3.HttpProtocolOptions
+        explicit_http_config:
+          http2_protocol_options: {}
+    # Passive outlier detection
+    outlier_detection:
+      consecutive_5xx: 3
+      interval: 10s
+      base_ejection_time: 30s
+      max_ejection_percent: 50
+    # Upstream uses HTTP/2 (gRPC)
+    typed_extension_protocol_options:
+      envoy.extensions.upstreams.http.v3.HttpProtocolOptions:
+        "@type": type.googleapis.com/envoy.extensions.upstreams.http.v3.HttpProtocolOptions
+        explicit_http_config:
+          http2_protocol_options: {}
+    # Passive outlier detection
+    outlier_detection:
+      consecutive_5xx: 3
+      interval: 10s
+      base_ejection_time: 30s
+      max_ejection_percent: 50
