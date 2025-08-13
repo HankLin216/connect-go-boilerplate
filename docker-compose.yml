@@ -93,23 +93,26 @@ services:
     # ports removed - access via envoy proxy only
 
   envoy-proxy:
-    image: envoy-with-python:v1.0.0
+    image: envoy-with-python-trace:v1.0.0
+    #image: docker.io/envoyproxy/envoy:v1.28-latest
     container_name: envoy-proxy
     ports:
       - 80:80
       - 9901:9901
     volumes:
       - ./envoy/envoy.yaml:/etc/envoy/envoy.yaml:ro
+      - ./envoy/dynamic:/etc/envoy/dynamic:rw
     environment:
       - SERVICE_NODE=envoy-proxy-node
       - SERVICE_ZONE=docker-compose
       - RESTART_EPOCH=0
       - ENVOY_MAX_OPEN_FILES=102400
-    depends_on:
-      - connect-go-boilerplate-1
-      - connect-go-boilerplate-2
-      - connect-go-boilerplate-3
-    command: ["python3", "/usr/local/bin/hot-restarter.py", "/usr/local/bin/start_envoy.sh"]
+    # depends_on:
+      # - connect-go-boilerplate-1
+      # - connect-go-boilerplate-2
+      # - connect-go-boilerplate-3
+    # command: ["python3", "/usr/local/bin/hot-restarter.py", "/usr/local/bin/start_envoy.sh"]
+    command: ["/usr/local/bin/envoy", "-c", "/etc/envoy/envoy.yaml"]
       
 volumes:
   elasticsearch-data:

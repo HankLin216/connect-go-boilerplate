@@ -1,0 +1,18 @@
+version_info: "11"
+resources:
+  - "@type": type.googleapis.com/envoy.config.endpoint.v3.ClusterLoadAssignment
+    cluster_name: connect_go_cluster
+    endpoints:
+      - lb_endpoints:
+          - endpoint:
+              address:
+                socket_address:
+                  address: 192.168.80.4
+                  port_value: 9000
+            health_status: HEALTHY
+          - endpoint:
+              address:
+                socket_address:
+                  address: 192.168.80.2
+                  port_value: 9000
+            health_status: HEALTHY

@@ -1,5 +1,5 @@
 # 使用官方 Envoy 映像作為基礎
-FROM envoyproxy/envoy:v1.27.0
+FROM envoyproxy/envoy:v1.33-latest
 
 # 安裝 Python 和必要的套件
 RUN apt-get update && apt-get install -y \

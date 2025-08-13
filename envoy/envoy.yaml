@@ -1,3 +1,7 @@
+node:
+  id: envoy-proxy-node
+  cluster: envoy-proxy-cluster
+
 static_resources:
   listeners:
     - name: listener_0
@@ -54,42 +58,29 @@ static_resources:
 
   clusters:
     - name: connect_go_cluster
+      type: EDS
       connect_timeout: 5s
-      type: STRICT_DNS
       lb_policy: ROUND_ROBIN
+      # File-based EDS: single ClusterLoadAssignment YAML at /etc/envoy/dynamic/endpoints.yaml
+      eds_cluster_config:
+        eds_config:
+          resource_api_version: V3
+          path_config_source:
+            path: "/etc/envoy/dynamic/endpoints.yaml"
+            watched_directory:
+              path: "/etc/envoy/dynamic/"
+      # Upstream uses HTTP/2 (gRPC)
       typed_extension_protocol_options:
         envoy.extensions.upstreams.http.v3.HttpProtocolOptions:
           "@type": type.googleapis.com/envoy.extensions.upstreams.http.v3.HttpProtocolOptions
           explicit_http_config:
             http2_protocol_options: {}
-      health_checks:
-        - timeout: 3s
-          interval: 5s
-          interval_jitter: 1s
-          unhealthy_threshold: 2
-          healthy_threshold: 1
-          grpc_health_check:
-            service_name: "grpc.health.v1.Health"
-          event_log_path: "/dev/stdout"
-      load_assignment:
-        cluster_name: connect_go_cluster
-        endpoints:
-          - lb_endpoints:
-              - endpoint:
-                  address:
-                    socket_address:
-                      address: connect-go-boilerplate-1
-                      port_value: 9000
-              - endpoint:
-                  address:
-                    socket_address:
-                      address: connect-go-boilerplate-2
-                      port_value: 9000
-              - endpoint:
-                  address:
-                    socket_address:
-                      address: connect-go-boilerplate-3
-                      port_value: 9000
+      # Passive outlier detection as supplement to external file updates
+      outlier_detection:
+        consecutive_5xx: 3
+        interval: 10s
+        base_ejection_time: 30s
+        max_ejection_percent: 50
 
 admin:
   address:
