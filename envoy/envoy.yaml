@@ -2,9 +2,6 @@ node:
   id: envoy-proxy-node
   cluster: envoy-proxy-cluster
 
-static_resources:
-  # Listeners moved to dynamic LDS configuration
-
 dynamic_resources:
   lds_config:
     resource_api_version: V3
@@ -14,9 +11,6 @@ dynamic_resources:
     resource_api_version: V3
     path_config_source:
       path: "/etc/envoy/dynamic/clusters.yaml"
-  # If you later want to manage multiple cluster files, remove the single 'path' above and use only
-  # watched_directory:
-  #   path: "/etc/envoy/dynamic"
 
 admin:
   address:

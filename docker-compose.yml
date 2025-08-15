@@ -111,8 +111,8 @@ services:
       # - connect-go-boilerplate-1
       # - connect-go-boilerplate-2
       # - connect-go-boilerplate-3
-    # command: ["python3", "/usr/local/bin/hot-restarter.py", "/usr/local/bin/start_envoy.sh"]
-    command: ["/usr/local/bin/envoy", "-c", "/etc/envoy/envoy.yaml"]
+    command: ["python3", "/usr/local/bin/hot-restarter.py", "/usr/local/bin/start_envoy.sh"]
+    # command: ["/usr/local/bin/envoy", "-c", "/etc/envoy/envoy.yaml"]
       
 volumes:
   elasticsearch-data:
