@@ -93,6 +93,7 @@ services:
     # ports removed - access via envoy proxy only
 
   envoy-proxy:
+    # image: envoy-with-python-trace:v1.0.0
     image: docker.io/envoyproxy/envoy:v1.28-latest
     container_name: envoy-proxy
     ports:
@@ -110,6 +111,7 @@ services:
       - connect-go-boilerplate-1
       - connect-go-boilerplate-2
       - connect-go-boilerplate-3
+    # command: ["python3", "/usr/local/bin/hot-restarter.py", "/usr/local/bin/start_envoy.sh"]
     command: ["/usr/local/bin/envoy", "-c", "/etc/envoy/envoy.yaml"]
       
 volumes:

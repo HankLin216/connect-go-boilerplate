@@ -1,4 +1,4 @@
-version_info: "4"
+version_info: "1"
 resources:
   - "@type": type.googleapis.com/envoy.config.cluster.v3.Cluster
     name: connect_go_cluster
@@ -22,3 +22,10 @@ resources:
       interval: 10s
       base_ejection_time: 30s
       max_ejection_percent: 50
+    # health_checks:
+    #   - timeout: 2s
+    #     interval: 5s
+    #     unhealthy_threshold: 2
+    #     healthy_threshold: 1
+    #     grpc_health_check:
+    #       service_name: "grpc.health.v1.Health"
