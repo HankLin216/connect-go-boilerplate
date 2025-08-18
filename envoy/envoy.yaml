@@ -7,10 +7,14 @@ dynamic_resources:
     resource_api_version: V3
     path_config_source:
       path: "/etc/envoy/dynamic/listeners.yaml"
+      watched_directory:
+        path: "/etc/envoy/dynamic"
   cds_config:
     resource_api_version: V3
     path_config_source:
       path: "/etc/envoy/dynamic/clusters.yaml"
+      watched_directory:
+        path: "/etc/envoy/dynamic"
 
 admin:
   address:

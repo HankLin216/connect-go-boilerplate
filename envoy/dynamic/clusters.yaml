@@ -22,15 +22,3 @@ resources:
       interval: 10s
       base_ejection_time: 30s
       max_ejection_percent: 50
-    # Upstream uses HTTP/2 (gRPC)
-    typed_extension_protocol_options:
-      envoy.extensions.upstreams.http.v3.HttpProtocolOptions:
-        "@type": type.googleapis.com/envoy.extensions.upstreams.http.v3.HttpProtocolOptions
-        explicit_http_config:
-          http2_protocol_options: {}
-    # Passive outlier detection
-    outlier_detection:
-      consecutive_5xx: 3
-      interval: 10s
-      base_ejection_time: 30s
-      max_ejection_percent: 50
