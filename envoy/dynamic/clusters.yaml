@@ -2,14 +2,34 @@ version_info: "1"
 resources:
   - "@type": type.googleapis.com/envoy.config.cluster.v3.Cluster
     name: connect_go_cluster
-    type: EDS
+    type: STRICT_DNS
     connect_timeout: 5s
     lb_policy: ROUND_ROBIN
-    eds_cluster_config:
-      eds_config:
-        resource_api_version: V3
-        path_config_source:
-          path: "/etc/envoy/dynamic/endpoints.yaml"
+    load_assignment:
+      cluster_name: connect_go_cluster
+      endpoints:
+        - lb_endpoints:
+            - endpoint:
+                address:
+                  socket_address:
+                    address: connect-go-boilerplate-1
+                    port_value: 9000
+              #health_status: UNHEALTHY
+            - endpoint:
+                address:
+                  socket_address:
+                    address: connect-go-boilerplate-2
+                    port_value: 9000
+            - endpoint:
+                address:
+                  socket_address:
+                    address: connect-go-boilerplate-3
+                    port_value: 9000
+    # eds_cluster_config:
+    #   eds_config:
+    #     resource_api_version: V3
+    #     path_config_source:
+    #       path: "/etc/envoy/dynamic/endpoints.yaml"
     # Upstream uses HTTP/2 (gRPC)
     typed_extension_protocol_options:
       envoy.extensions.upstreams.http.v3.HttpProtocolOptions:
