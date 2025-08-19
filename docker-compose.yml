@@ -94,7 +94,7 @@ services:
 
   envoy-proxy:
     # image: envoy-with-python-trace:v1.0.0
-    image: docker.io/envoyproxy/envoy:v1.28-latest
+    image: docker.io/envoyproxy/envoy:v1.33-latest
     container_name: envoy-proxy
     ports:
       - 80:80
