@@ -88,7 +88,7 @@ services:
     # ports removed - access via envoy proxy only
 
   connect-go-boilerplate-3:
-    image: connect-go-boilerplate-unhealthy:v0.0.1-6-g5d548be
+    image: connect-go-boilerplate:${VERSION}
     container_name: connect-go-boilerplate-3
     # ports removed - access via envoy proxy only
 
