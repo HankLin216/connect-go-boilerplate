@@ -1,5 +1,7 @@
 VERSION=$(shell git describe --tags --always)
 YMAL_CONF_PATH=./config.yaml
+HARBOR_REGISTRY=192.168.40.185:30003
+HARBOR_PROJECT=connect-go-boilerplate
 
 .PHONY: install
 # install golang, buf and related tools
@@ -112,6 +114,18 @@ docker-compose: build-image
 # run development docker-compose
 dev-docker-compose: dev-build-image
 	VERSION=$(VERSION)-dev docker-compose up -d
+
+.PHONY: push-image
+# push production image to harbor
+push-image: build-image
+	docker tag connect-go-boilerplate:$(VERSION) $(HARBOR_REGISTRY)/$(HARBOR_PROJECT)/connect-go-boilerplate:$(VERSION)
+	docker push $(HARBOR_REGISTRY)/$(HARBOR_PROJECT)/connect-go-boilerplate:$(VERSION)
+
+.PHONY: push-dev-image
+# push development image to harbor
+push-dev-image: dev-build-image
+	docker tag connect-go-boilerplate:$(VERSION)-dev $(HARBOR_REGISTRY)/$(HARBOR_PROJECT)/connect-go-boilerplate:$(VERSION)-dev
+	docker push $(HARBOR_REGISTRY)/$(HARBOR_PROJECT)/connect-go-boilerplate:$(VERSION)-dev
 
 .PHONY: help
 # show help
