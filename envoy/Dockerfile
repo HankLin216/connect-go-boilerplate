@@ -1,7 +1,7 @@
-# 使用官方 Envoy 映像作為基礎
+# Use official Envoy image as base
 FROM envoyproxy/envoy:v1.33-latest
 
-# 安裝 Python 和必要的套件
+# Install Python and required packages
 RUN apt-get update && apt-get install -y \
     python3 \
     python3-pip \
@@ -10,28 +10,28 @@ RUN apt-get update && apt-get install -y \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-# 建立工作目錄
+# Create working directory
 WORKDIR /etc/envoy
 
-# 複製 Python 熱重啟腳本
+# Copy Python hot-restarter script
 COPY hot-restarter.py /usr/local/bin/hot-restarter.py
 
-# 複製啟動腳本
+# Copy startup script
 COPY start_envoy.sh /usr/local/bin/start_envoy.sh
 
-# 設定執行權限
+# Set execute permissions
 RUN chmod +x /usr/local/bin/hot-restarter.py && \
     chmod +x /usr/local/bin/start_envoy.sh
 
-# 設定環境變數
+# Set environment variables
 ENV RESTART_EPOCH=0
 ENV SERVICE_NODE=envoy-node
 ENV SERVICE_ZONE=docker
 ENV ENVOY_MAX_OPEN_FILES=102400
 
-# 暴露 Envoy 使用的端口
+# Expose ports used by Envoy
 EXPOSE 80 9901
 
-# 預設啟動命令：使用 hot-restarter.py 來啟動 Envoy，支援熱重啟功能
-# 設定檔和參數可以在 docker-compose 中覆蓋
+# Default startup command: use hot-restarter.py to start Envoy with hot-restart support
+# Configuration file and parameters can be overridden in docker-compose
 CMD ["python3", "/usr/local/bin/hot-restarter.py", "/usr/local/bin/start_envoy.sh"]
