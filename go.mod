@@ -1,6 +1,8 @@
 module github.com/HankLin216/connect-go-boilerplate
 
-go 1.23.2
+go 1.24.0
+
+toolchain go1.24.10
 
 require (
 	connectrpc.com/connect v1.18.1
@@ -11,13 +13,12 @@ require (
 	github.com/rs/cors v1.11.1
 	go.elastic.co/ecszap v1.0.3
 	golang.org/x/net v0.42.0
-	google.golang.org/protobuf v1.36.6
+	google.golang.org/protobuf v1.36.10
 )
 
 require (
 	dario.cat/mergo v1.0.2 // indirect
 	github.com/fsnotify/fsnotify v1.9.0 // indirect
-	github.com/google/go-cmp v0.7.0 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/stretchr/testify v1.10.0 // indirect
 	golang.org/x/sys v0.34.0 // indirect

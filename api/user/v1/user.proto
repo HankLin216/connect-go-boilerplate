@@ -5,13 +5,15 @@ package user.v1;
 option go_package = "github.com/HankLin216/connect-go-boilerplate/api/user/v1";
 
 service User {
-  rpc Get (GetRequest) returns (GetResponse) {}
+    rpc Get(GetRequest) returns (GetResponse) {
+        option idempotency_level = NO_SIDE_EFFECTS;
+    }
 }
 
 message GetRequest {
-  string name = 1;
+    string name = 1;
 }
 
 message GetResponse {
-  string message = 1;
+    string message = 1;
 }

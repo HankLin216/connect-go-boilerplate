@@ -57,6 +57,7 @@ func NewUserClient(httpClient connect.HTTPClient, baseURL string, opts ...connec
 			httpClient,
 			baseURL+UserGetProcedure,
 			connect.WithSchema(userMethods.ByName("Get")),
+			connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 			connect.WithClientOptions(opts...),
 		),
 	}
@@ -88,6 +89,7 @@ func NewUserHandler(svc UserHandler, opts ...connect.HandlerOption) (string, htt
 		UserGetProcedure,
 		svc.Get,
 		connect.WithSchema(userMethods.ByName("Get")),
+		connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 		connect.WithHandlerOptions(opts...),
 	)
 	return "/user.v1.User/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

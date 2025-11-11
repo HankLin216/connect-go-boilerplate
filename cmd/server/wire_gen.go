@@ -26,7 +26,10 @@ func wireApp(server *conf.Server, bootstrap *conf.Bootstrap) (*http.Server, func
 	greeterRepo := data.NewGreeterRepo(dataData)
 	greeterUsecase := biz.NewGreeterUsecase(greeterRepo)
 	greeterService := service.NewGreeterService(greeterUsecase)
-	serveMux := mux.New(greeterService)
+	userRepo := data.NewUserRepo(dataData)
+	userUsecase := biz.NewUserUsecase(userRepo)
+	userService := service.NewUserService(userUsecase)
+	serveMux := mux.New(greeterService, userService)
 	httpServer := newApp(serveMux, bootstrap)
 	return httpServer, func() {
 		cleanup()

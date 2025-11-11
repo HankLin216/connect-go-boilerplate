@@ -118,9 +118,9 @@ const file_api_user_v1_user_proto_rawDesc = "" +
 	"GetRequest\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\"'\n" +
 	"\vGetResponse\x12\x18\n" +
-	"\amessage\x18\x01 \x01(\tR\amessage2:\n" +
-	"\x04User\x122\n" +
-	"\x03Get\x12\x13.user.v1.GetRequest\x1a\x14.user.v1.GetResponse\"\x00B\x96\x01\n" +
+	"\amessage\x18\x01 \x01(\tR\amessage2=\n" +
+	"\x04User\x125\n" +
+	"\x03Get\x12\x13.user.v1.GetRequest\x1a\x14.user.v1.GetResponse\"\x03\x90\x02\x01B\x96\x01\n" +
 	"\vcom.user.v1B\tUserProtoP\x01Z?github.com/HankLin216/connect-go-boilerplate/api/user/v1;userv1\xa2\x02\x03UXX\xaa\x02\aUser.V1\xca\x02\aUser\\V1\xe2\x02\x13User\\V1\\GPBMetadata\xea\x02\bUser::V1b\x06proto3"
 
 var (
