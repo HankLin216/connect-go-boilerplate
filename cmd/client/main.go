@@ -13,8 +13,10 @@ import (
 	"time"
 
 	"connectrpc.com/connect"
-	v1 "github.com/HankLin216/connect-go-boilerplate/api/greeter/v1"
+	greeterv1 "github.com/HankLin216/connect-go-boilerplate/api/greeter/v1"
 	"github.com/HankLin216/connect-go-boilerplate/api/greeter/v1/greeterv1connect"
+	userv1 "github.com/HankLin216/connect-go-boilerplate/api/user/v1"
+	"github.com/HankLin216/connect-go-boilerplate/api/user/v1/userv1connect"
 )
 
 var (
@@ -23,6 +25,8 @@ var (
 	timeout    = flag.Duration("timeout", 10*time.Second, "Request timeout")
 	clientName = flag.String("name", "TestClient", "Client name prefix")
 	enableTLS  = flag.Bool("tls", false, "Whether to use HTTPS")
+	useHTTPGet = flag.Bool("get", true, "Use HTTP GET for idempotent requests")
+	testUser   = flag.Bool("user", false, "Test User service instead of Greeter")
 )
 
 func main() {
@@ -41,8 +45,14 @@ func main() {
 		Timeout: *timeout,
 	}
 
-	// Create Connect client
-	greeterClient := greeterv1connect.NewGreeterClient(client, addr)
+	// Create Connect clients with HTTP GET support
+	var clientOptions []connect.ClientOption
+	if *useHTTPGet {
+		clientOptions = append(clientOptions, connect.WithHTTPGet())
+	}
+
+	greeterClient := greeterv1connect.NewGreeterClient(client, addr, clientOptions...)
+	userClient := userv1connect.NewUserClient(client, addr, clientOptions...)
 
 	// Create cancellable context
 	ctx, cancel := context.WithCancel(context.Background())
@@ -59,10 +69,17 @@ func main() {
 	ticker := time.NewTicker(*interval)
 	defer ticker.Stop()
 
-	fmt.Printf("🚀 Start calling SayHello API every %v\n", *interval)
+	service := "Greeter"
+	if *testUser {
+		service = "User"
+	}
+
+	fmt.Printf("🚀 Start calling %s API every %v\n", service, *interval)
 	fmt.Printf("📡 Server address: %s\n", addr)
 	fmt.Printf("⏰ Timeout: %v\n", *timeout)
 	fmt.Printf("👤 Client name: %s\n", *clientName)
+	fmt.Printf("🌐 HTTP GET enabled: %v\n", *useHTTPGet)
+	fmt.Printf("📋 Testing service: %s\n", service)
 	fmt.Println("Press Ctrl+C to stop...")
 	fmt.Println(strings.Repeat("-", 50))
 
@@ -84,19 +101,52 @@ func main() {
 			// Create context with timeout
 			reqCtx, reqCancel := context.WithTimeout(ctx, *timeout)
 
-			// Create request
-			req := connect.NewRequest(&v1.HelloRequest{
-				Name: fmt.Sprintf("%s-%d", *clientName, counter),
-			})
-
-			// Add request headers (optional)
-			req.Header().Set("User-Agent", "connect-go-client/1.0")
-			req.Header().Set("X-Client-Version", "1.0.0")
-
 			start := time.Now()
+			var err error
+			var message string
 
-			// Call API
-			resp, err := greeterClient.SayHello(reqCtx, req)
+			if *testUser {
+				// Test User service (supports HTTP GET)
+				// Use fixed name for caching test
+				req := connect.NewRequest(&userv1.GetRequest{
+					Name: *clientName, // 使用固定名稱而不是包含 counter
+				})
+
+				// Add request headers
+				req.Header().Set("User-Agent", "connect-go-client/1.0")
+				req.Header().Set("X-Client-Version", "1.0.0")
+
+				resp, uerr := userClient.Get(reqCtx, req)
+				if uerr == nil {
+					message = resp.Msg.Message
+
+					// Print all response headers
+					fmt.Printf("� [%d] Response Headers:\n", counter)
+					for key, values := range resp.Header() {
+						for _, value := range values {
+							fmt.Printf("   %s: %s\n", key, value)
+						}
+					}
+				} else {
+					err = uerr
+				}
+			} else {
+				// Test Greeter service
+				req := connect.NewRequest(&greeterv1.HelloRequest{
+					Name: fmt.Sprintf("%s-%d", *clientName, counter),
+				})
+
+				// Add request headers
+				req.Header().Set("User-Agent", "connect-go-client/1.0")
+				req.Header().Set("X-Client-Version", "1.0.0")
+
+				resp, gerr := greeterClient.SayHello(reqCtx, req)
+				if gerr == nil {
+					message = resp.Msg.Message
+				} else {
+					err = gerr
+				}
+			}
 
 			duration := time.Since(start)
 			reqCancel()
@@ -108,7 +158,7 @@ func main() {
 			}
 
 			successCount++
-			fmt.Printf("✅ [%d] Response (%v): %s\n", counter, duration, resp.Msg.Message)
+			fmt.Printf("✅ [%d] Response (%v): %s\n", counter, duration, message)
 		}
 	}
 }

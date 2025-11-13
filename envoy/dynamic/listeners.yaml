@@ -24,6 +24,19 @@ resources:
                 - name: envoy.filters.http.cors
                   typed_config:
                     "@type": type.googleapis.com/envoy.extensions.filters.http.cors.v3.Cors
+                # - name: envoy.filters.http.connect_grpc_bridge
+                #   typed_config:
+                #     "@type": type.googleapis.com/envoy.extensions.filters.http.connect_grpc_bridge.v3.FilterConfig
+                - name: envoy.filters.http.cache
+                  typed_config:
+                    "@type": type.googleapis.com/envoy.extensions.filters.http.cache.v3.CacheConfig
+                    typed_config:
+                      "@type": type.googleapis.com/envoy.extensions.http.cache.simple_http_cache.v3.SimpleHttpCacheConfig
+                    # # Allowed vary headers for cache key
+                    # allowed_vary_headers:
+                    #   - name: "accept"
+                    #   - name: "accept-encoding"
+                    #   - name: "content-type"
                 - name: envoy.filters.http.router
                   typed_config:
                     "@type": type.googleapis.com/envoy.extensions.filters.http.router.v3.Router
