@@ -12,19 +12,9 @@ resources:
             - endpoint:
                 address:
                   socket_address:
-                    address: connect-go-boilerplate-1
+                    address: connect-go-boilerplate
                     port_value: 9000
               #health_status: UNHEALTHY
-            - endpoint:
-                address:
-                  socket_address:
-                    address: connect-go-boilerplate-2
-                    port_value: 9000
-            - endpoint:
-                address:
-                  socket_address:
-                    address: connect-go-boilerplate-3
-                    port_value: 9000
     # eds_cluster_config:
     #   eds_config:
     #     resource_api_version: V3

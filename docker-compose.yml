@@ -77,19 +77,9 @@ services:
       - /var/lib/docker/containers:/var/lib/docker/containers:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
-  connect-go-boilerplate-1:
+  connect-go-boilerplate:
     image: connect-go-boilerplate:${VERSION}
-    container_name: connect-go-boilerplate-1
-    # ports removed - access via envoy proxy only
-      
-  connect-go-boilerplate-2:
-    image: connect-go-boilerplate:${VERSION}
-    container_name: connect-go-boilerplate-2
-    # ports removed - access via envoy proxy only
-
-  connect-go-boilerplate-3:
-    image: connect-go-boilerplate:${VERSION}
-    container_name: connect-go-boilerplate-3
+    scale: 3
     # ports removed - access via envoy proxy only
 
   envoy-proxy:
@@ -108,9 +98,7 @@ services:
       - RESTART_EPOCH=0
       - ENVOY_MAX_OPEN_FILES=102400
     depends_on:
-      - connect-go-boilerplate-1
-      - connect-go-boilerplate-2
-      - connect-go-boilerplate-3
+      - connect-go-boilerplate
     # command: ["python3", "/usr/local/bin/hot-restarter.py", "/usr/local/bin/start_envoy.sh"]
     command: ["/usr/local/bin/envoy", "-c", "/etc/envoy/envoy.yaml"]
 

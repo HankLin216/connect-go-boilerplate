@@ -32,17 +32,17 @@ resources:
                 virtual_hosts:
                   - name: local_service
                     domains:
-                      ["connect-go.phison.com", "connect-go.phison.com:80", "*"]
+                      ["connect-go.phison.com", "*"]
                     routes:
-                      - match:
-                          prefix: "/"
-                          headers:
-                            - name: "content-type"
-                              string_match:
-                                prefix: "application/grpc"
-                        route:
-                          cluster: connect_go_cluster
-                          timeout: 30s
+                      # - match:
+                      #     prefix: "/"
+                      #     headers:
+                      #       - name: "content-type"
+                      #         string_match:
+                      #           prefix: "application/grpc"
+                      #   route:
+                      #     cluster: connect_go_cluster
+                      #     timeout: 30s
                       - match:
                           prefix: "/"
                         route:
