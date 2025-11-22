@@ -7,3 +7,5 @@ configs
 certs/*.crt
 certs/*.pem
 certs/*.key
+
+*.exe
