@@ -95,14 +95,24 @@ run-image:
 dev-run-image:
 	docker run -d --rm --name connect-go-boilerplate-dev -p 9000:9000 connect-go-boilerplate:$(VERSION)-dev
 
-.PHONY: docker-compose
-# run docker-compose
-docker-compose: build-image
+.PHONY: full-docker-compose
+# build image and run docker-compose
+full-docker-compose: build-image
 	VERSION=$(VERSION) docker-compose up -d
 
+.PHONY: docker-compose
+# run docker-compose without building
+docker-compose:
+	VERSION=$(VERSION) docker-compose up -d
+
+.PHONY: dev-full-docker-compose
+# build dev image and run docker-compose
+dev-full-docker-compose: dev-build-image
+	VERSION=$(VERSION)-dev docker-compose up -d
+
 .PHONY: dev-docker-compose
-# run development docker-compose
-dev-docker-compose: dev-build-image
+# run development docker-compose without building
+dev-docker-compose:
 	VERSION=$(VERSION)-dev docker-compose up -d
 
 .PHONY: push-image
