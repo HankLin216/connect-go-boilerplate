@@ -95,16 +95,6 @@ run-image:
 dev-run-image:
 	docker run -d --rm --name connect-go-boilerplate-dev -p 9000:9000 connect-go-boilerplate:$(VERSION)-dev
 
-.PHONY: build-envoy
-# build envoy proxy image
-build-envoy:
-	docker build -t envoy-with-python:v1.0.0 -f envoy/Dockerfile envoy/
-
-.PHONY: run-envoy
-# run envoy proxy image
-run-envoy:
-	docker run -d --rm --name connect-go-boilerplate-envoy -p 80:80 -p 9901:9901 connect-go-boilerplate-envoy:$(VERSION)
-
 .PHONY: docker-compose
 # run docker-compose
 docker-compose: build-image
