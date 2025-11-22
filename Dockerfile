@@ -6,7 +6,6 @@ ENV APP_ENV=${ENVIRONMENT}
 ENV GOPROXY=direct
 
 # Copy self-signed certificate if it exists and update trust store
-# This directory will be silently ignored if it doesn't exist (thanks to .dockerignore or empty directory)
 COPY certs/ /usr/local/share/ca-certificates/
 RUN apt-get update && apt-get install -y ca-certificates && update-ca-certificates || true
 
