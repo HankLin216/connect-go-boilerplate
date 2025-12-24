@@ -1,5 +1,5 @@
 syntax = "proto3";
-package kratos.api;
+package connect.conf;
 
 option go_package = "connect-go-boilerplate/internal/conf;conf";
 

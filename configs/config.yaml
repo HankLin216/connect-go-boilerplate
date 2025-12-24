@@ -1,0 +1,19 @@
+server:
+  http:
+    # Server listen network type
+    network: tcp
+    # Bind address for the Connect/HTTP server
+    addr: 0.0.0.0:9000
+    # Request timeout (mapped to google.protobuf.Duration)
+    timeout: 5s
+
+data:
+  database:
+    # Placeholder database settings; adjust when you plug in a real DB
+    driver: sqlite
+    source: file::memory:?cache=shared
+  redis:
+    network: tcp
+    addr: 127.0.0.1:6379
+    read_timeout: 2s
+    write_timeout: 2s
