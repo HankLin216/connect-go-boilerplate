@@ -2,10 +2,8 @@
 
 bin
 
-configs
-
-certs/*.crt
-certs/*.pem
-certs/*.key
+# Ignore all files under certs except .gitkeep
+certs/*
+!certs/.gitkeep
 
 *.exe
