@@ -36,18 +36,18 @@ processors:
   - add_docker_metadata: ~
   - add_host_metadata: ~
 
-output.elasticsearch:
-  hosts: ["elasticsearch:9200"]
-  indices:
-    # - index: "elastic-%{+yyyy.MM.dd}"
-    #   when.or:
-    #     - equals:
-    #         container.name: filebeat
-    #     - equals:
-    #         container.name: elasticsearch
-    #     - equals:
-    #         container.name: kibana
-    - index: "connect-go-%{+yyyy.MM.dd}"
-      when.or:
-        - contains:
-            container.name: connect-go-boilerplate
+output.logstash:
+  hosts: ["logstash:5044"]
+
+# output.elasticsearch:
+#   hosts: ["elasticsearch:9200"]
+#   indices:
+#     # - index: "elastic-%{+yyyy.MM.dd}"
+#     #   when.or:
+#     #     - equals:
+#     #         container.name: filebeat
+#     #     - equals:
+#     #         container.name: elasticsearch
+#     #     - equals:
+#     #         container.name: kibana
+#     - index: "connect-go-%{+yyyy.MM.dd}"

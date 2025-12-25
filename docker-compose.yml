@@ -61,10 +61,24 @@ services:
       timeout: 10s
       retries: 20
   
-  filebeat:
+  logstash:
+    image: docker.elastic.co/logstash/logstash:8.16.1
+    container_name: logstash
+    volumes:
+      - ./logstash.conf:/usr/share/logstash/pipeline/logstash.conf:ro
+    ports:
+      - 5044:5044
+      - 9600:9600
+    environment:
+      - LS_JAVA_OPTS=-Xmx256m -Xms256m
     depends_on:
       elasticsearch:
         condition: service_healthy
+
+  filebeat:
+    depends_on:
+      logstash:
+        condition: service_started
     image: docker.elastic.co/beats/filebeat:8.16.1
     container_name: filebeat
     user: root
