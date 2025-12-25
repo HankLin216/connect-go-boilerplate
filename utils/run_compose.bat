@@ -23,26 +23,45 @@ IF "%1"=="down" GOTO Down
 
 GOTO Help
 
+:CheckImage
+REM Check if image exists, if not build it
+docker image inspect connect-go-boilerplate:%VERSION% >nul 2>&1
+IF %ERRORLEVEL% NEQ 0 (
+    echo [WARN] Image connect-go-boilerplate:%VERSION% not found. Building...
+    IF "%VERSION:~-4%"=="-dev" (
+        call .\utils\build_docker_image.bat connect-go-boilerplate Development Dockerfile
+    ) ELSE (
+        call .\utils\build_docker_image.bat connect-go-boilerplate Production Dockerfile
+    )
+) ELSE (
+    echo [INFO] Image connect-go-boilerplate:%VERSION% found. Skipping build.
+)
+EXIT /B 0
+
 :Full
+CALL :CheckImage
 echo [INFO] Starting FULL stack (App, Envoy, ELK, Prometheus, Grafana)...
-docker compose up -d --build
+docker compose up -d
 GOTO End
 
 :DevFull
-echo [INFO] Starting DEV FULL stack (App, Envoy, ELK, Prometheus, Grafana)...
 set VERSION=%GIT_TAG%-dev
-docker compose up -d --build
+CALL :CheckImage
+echo [INFO] Starting DEV FULL stack (App, Envoy, ELK, Prometheus, Grafana)...
+docker compose up -d
 GOTO End
 
 :App
+CALL :CheckImage
 echo [INFO] Starting APP stack (App, Envoy)...
-docker compose up -d --build connect-go-boilerplate envoy-proxy
+docker compose up -d connect-go-boilerplate envoy-proxy
 GOTO End
 
 :DevApp
-echo [INFO] Starting DEV APP stack (App, Envoy)...
 set VERSION=%GIT_TAG%-dev
-docker compose up -d --build connect-go-boilerplate envoy-proxy
+CALL :CheckImage
+echo [INFO] Starting DEV APP stack (App, Envoy)...
+docker compose up -d connect-go-boilerplate envoy-proxy
 GOTO End
 
 :Down
