@@ -70,6 +70,21 @@
 			"args": [
 				"${input:composeAction}"
 			]
+		},
+		{
+			"label": "Helm Install (win)",
+			"type": "shell",
+			"command": ".\\utils\\helm_install.bat",
+			"args": [
+				"${input:helmAction}"
+			],
+			"problemMatcher": []
+		},
+		{
+			"label": "Helm Uninstall (win)",
+			"type": "shell",
+			"command": ".\\utils\\helm_uninstall.bat",
+			"problemMatcher": []
 		}
 	],
 	"inputs": [
@@ -101,6 +116,18 @@
 			],
 			"description": "Select the build target",
 			"default": "Production"
+		},
+		{
+			"id": "helmAction",
+			"type": "pickString",
+			"options": [
+				"install",
+				"dev-install",
+				"full",
+				"dev-full"
+			],
+			"description": "Select the helm install action",
+			"default": "install"
 		}
 	]
 }

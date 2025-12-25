@@ -125,6 +125,22 @@ app-docker-compose: build-image
 dev-app-docker-compose: dev-build-image
 	VERSION=$(VERSION)-dev docker-compose up -d connect-go-boilerplate envoy-proxy
 
+.PHONY: helm-install
+# install helm chart without building image
+helm-install:
+	helm upgrade --install connect-go-boilerplate ./helm/connect-go-boilerplate \
+	--set connectGoBoilerplate.image.tag=$(VERSION) \
+	--set connectGoBoilerplate.image.pullPolicy=Never
+
+.PHONY: full-helm-install
+# build image and install helm chart
+full-helm-install: build-image helm-install
+
+.PHONY: helm-uninstall
+# uninstall helm chart
+helm-uninstall:
+	helm uninstall connect-go-boilerplate
+
 .PHONY: push-image
 # push production image to harbor
 push-image: build-image

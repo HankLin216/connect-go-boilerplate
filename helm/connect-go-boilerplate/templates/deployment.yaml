@@ -7,7 +7,7 @@ metadata:
     app: {{ include "connect-go-boilerplate.name" . }}
     release: {{ .Release.Name | quote }}
 spec:
-  replicas: {{ .Values.replicaCount }}
+  replicas: {{ .Values.connectGoBoilerplate.replicaCount }}
   selector:
     matchLabels:
       app: {{ include "connect-go-boilerplate.name" . }}
@@ -18,27 +18,27 @@ spec:
         app: {{ include "connect-go-boilerplate.name" . }}
         release: {{ .Release.Name | quote }}
     spec:
-      {{- with .Values.imagePullSecrets }}
+      {{- if .Values.connectGoBoilerplate.imagePullSecrets }}
       imagePullSecrets:
-        {{- toYaml . | nindent 8 }}
+{{ toYaml .Values.connectGoBoilerplate.imagePullSecrets | indent 8 }}
       {{- end }}
       containers:
       - name: {{ .Chart.Name }}
-        image: "{{ .Values.image.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        image: "{{ .Values.connectGoBoilerplate.image.registry }}/{{ .Values.connectGoBoilerplate.image.repository }}:{{ .Values.connectGoBoilerplate.image.tag }}"
+        imagePullPolicy: {{ .Values.connectGoBoilerplate.image.pullPolicy }}
         ports:
         - name: http
-          containerPort: {{ .Values.service.targetPort }}
+          containerPort: {{ .Values.connectGoBoilerplate.service.targetPort }}
           protocol: TCP
-        {{- if .Values.livenessProbe }}
+        {{- if .Values.connectGoBoilerplate.livenessProbe }}
         livenessProbe:
-          {{- toYaml .Values.livenessProbe | nindent 12 }}
+          {{- toYaml .Values.connectGoBoilerplate.livenessProbe | nindent 12 }}
         {{- end }}
-        {{- if .Values.readinessProbe }}
+        {{- if .Values.connectGoBoilerplate.readinessProbe }}
         readinessProbe:
-          {{- toYaml .Values.readinessProbe | nindent 12 }}
+          {{- toYaml .Values.connectGoBoilerplate.readinessProbe | nindent 12 }}
         {{- end }}
-        {{- with .Values.resources }}
+        {{- with .Values.connectGoBoilerplate.resources }}
         resources:
           {{- toYaml . | nindent 12 }}
         {{- end }}

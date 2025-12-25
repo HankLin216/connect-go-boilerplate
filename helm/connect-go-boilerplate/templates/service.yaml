@@ -7,15 +7,15 @@ metadata:
     app: {{ include "connect-go-boilerplate.name" . }}
     release: {{ .Release.Name | quote }}
 spec:
-  type: {{ .Values.service.type }}
+  type: {{ .Values.connectGoBoilerplate.service.type }}
   ports:
-    - port: {{ .Values.service.port }}
-      targetPort: {{ .Values.service.targetPort }}
-      {{- if eq .Values.service.type "NodePort" }}
-      nodePort: {{ .Values.service.nodePort }}
+    - port: {{ .Values.connectGoBoilerplate.service.port }}
+      targetPort: {{ .Values.connectGoBoilerplate.service.targetPort }}
+      {{- if eq .Values.connectGoBoilerplate.service.type "NodePort" }}
+      nodePort: {{ .Values.connectGoBoilerplate.service.nodePort }}
       {{- end }}
       protocol: TCP
-      name: {{ .Values.service.name }}
+      name: {{ .Values.connectGoBoilerplate.service.name }}
   selector:
     app: {{ include "connect-go-boilerplate.name" . }}
     release: {{ .Release.Name | quote }}

@@ -20,17 +20,3 @@ Create a default fully qualified app name.
 {{- end }}
 {{- end }}
 {{- end }}
-
-{{/*
-Create chart name and version as used by the chart label.
-*/}}
-{{- define "connect-go-boilerplate.chart" -}}
-{{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
-{{- end }}
-
-{{/*
-Generate docker config for private registry authentication
-*/}}
-{{- define "connect-go-boilerplate.dockercfg" -}}
-{{ printf "{\"auths\":{\"%s\":{\"username\":\"%s\",\"password\":\"%s\",\"auth\":\"%s\"}}}" .Values.harborRegistry.url .Values.harborRegistry.username .Values.harborRegistry.password (printf "%s:%s" .Values.harborRegistry.username .Values.harborRegistry.password | b64enc) }}
-{{- end }}
