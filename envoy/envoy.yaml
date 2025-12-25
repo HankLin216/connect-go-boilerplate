@@ -1,0 +1,24 @@
+node:
+  id: envoy-proxy-node
+  cluster: envoy-proxy-cluster
+
+dynamic_resources:
+  lds_config:
+    resource_api_version: V3
+    path_config_source:
+      path: "/etc/envoy/dynamic/listeners.yaml"
+      watched_directory:
+        path: "/etc/envoy/dynamic"
+  cds_config:
+    resource_api_version: V3
+    path_config_source:
+      path: "/etc/envoy/dynamic/clusters.yaml"
+      watched_directory:
+        path: "/etc/envoy/dynamic"
+
+admin:
+  address:
+    socket_address:
+      protocol: TCP
+      address: 0.0.0.0
+      port_value: 9901

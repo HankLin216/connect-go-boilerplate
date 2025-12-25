@@ -1,70 +1,106 @@
 {
-  "version": "2.0.0",
-  "tasks": [
-    {
-      "label": "Generate API Proto Files (win)",
-      "type": "shell",
-      "command": "./utils/generate_proto.bat",
-      "args": ["${workspaceFolder}\\api"],
-      "problemMatcher": []
-    },
-    {
-      "label": "Generate Proto Files (win)",
-      "type": "shell",
-      "command": "./utils/generate_proto.bat",
-      "args": ["${input:protoDirectory}"],
-      "problemMatcher": []
-    },
-    {
-      "label": "Build (win)",
-      "type": "shell",
-      "command": "./utils/build.bat",
-      "problemMatcher": [],
-      "args": [
-        "./config.yaml",
-        "${input:buildTarget}",
-        "${workspaceFolder}/bin/app.exe"
-      ]
-    },
-    {
-      "label": "Generate Wire",
-      "type": "shell",
-      "command": "go",
-      "problemMatcher": ["$go"],
-      "args": ["generate", "./..."]
-    },
-    {
-      "label": "Build Image (win)",
-      "type": "shell",
-      "command": "./utils/build_docker_image.bat",
-      "problemMatcher": [],
-      "args": [
-        "connect-go-boilerplate",
-        "${input:buildTarget}",
-        "${workspaceFolder}\\Dockerfile"
-      ]
-    },
-    {
-      "label": "Run Image (win)",
-      "type": "shell",
-      "command": "./utils/run_docker_image.bat",
-      "problemMatcher": [],
-      "args": ["connect-go-boilerplate", "${input:buildTarget}"]
-    }
-  ],
-  "inputs": [
-    {
-      "id": "protoDirectory",
-      "type": "promptString",
-      "description": "Enter the directory for proto files",
-      "default": "${workspaceFolder}\\api"
-    },
-    {
-      "id": "buildTarget",
-      "type": "pickString",
-      "options": ["Production", "Development"],
-      "description": "Select the build target",
-      "default": "Production"
-    }
-  ]
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Generate API Proto Files (win)",
+			"type": "shell",
+			"command": "./utils/generate_proto.bat",
+			"args": [
+				"${workspaceFolder}\\api"
+			],
+			"problemMatcher": []
+		},
+		{
+			"label": "Generate Proto Files (win)",
+			"type": "shell",
+			"command": "./utils/generate_proto.bat",
+			"args": [
+				"${input:protoDirectory}"
+			],
+			"problemMatcher": []
+		},
+		{
+			"label": "Build (win)",
+			"type": "shell",
+			"command": "./utils/build.bat",
+			"problemMatcher": [],
+			"args": [
+				"./config.yaml",
+				"${input:buildTarget}",
+				"${workspaceFolder}/bin/app.exe"
+			]
+		},
+		{
+			"label": "Generate Wire",
+			"type": "shell",
+			"command": "go",
+			"problemMatcher": [
+				"$go"
+			],
+			"args": [
+				"generate",
+				"./..."
+			]
+		},
+		{
+			"label": "Build Image (win)",
+			"type": "shell",
+			"command": "./utils/build_docker_image.bat",
+			"problemMatcher": [],
+			"args": [
+				"connect-go-boilerplate",
+				"${input:buildTarget}",
+				"${workspaceFolder}\\Dockerfile"
+			]
+		},
+		{
+			"label": "Run Image (win)",
+			"type": "shell",
+			"command": "./utils/run_docker_image.bat",
+			"problemMatcher": [],
+			"args": [
+				"connect-go-boilerplate",
+				"${input:buildTarget}"
+			]
+		},
+		{
+			"label": "Run Docker Compose (win)",
+			"type": "shell",
+			"command": ".\\utils\\run_compose.bat",
+			"args": [
+				"${input:composeAction}"
+			]
+		}
+	],
+	"inputs": [
+		{
+			"id": "composeAction",
+			"type": "pickString",
+			"options": [
+				"full",
+				"dev-full",
+				"app",
+				"dev-app",
+				"down"
+			],
+			"description": "Select the docker compose action",
+			"default": "full"
+		},
+		{
+			"id": "protoDirectory",
+			"type": "promptString",
+			"description": "Enter the directory for proto files",
+			"default": "${workspaceFolder}\\api"
+		},
+		{
+			"id": "buildTarget",
+			"type": "pickString",
+			"options": [
+				"Production",
+				"Development"
+			],
+			"description": "Select the build target",
+			"default": "Production"
+		}
+	]
 }

@@ -44,6 +44,9 @@ services:
     environment:
       - SERVER_NAME=kibana
       - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - XPACK_SECURITY_ENABLED=false
+      - XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY=
+      - ELASTICSEARCH_SECURITY_ENABLED=false
       #- ELASTICSEARCH_USERNAME=kibana_system
       #- ELASTICSEARCH_PASSWORD=${KIBANA_LOCAL_PASSWORD}
       #- XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY=${KIBANA_ENCRYPTION_KEY}
@@ -71,15 +74,70 @@ services:
       - -strict.perms=false
     volumes:
       - ./filebeat.docker.yml:/usr/share/filebeat/filebeat.yml:ro
-      #- /mnt/wsl/docker-desktop-data/version-pack-data/community/docker/containers:/var/lib/docker/containers:ro
-      - /mnt/wsl/docker-desktop-data/data/docker/containers:/var/lib/docker/containers:ro
-      - /var/run/docker.sock:/var/run/docker.sock:ro
+      # - /mnt/wsl/docker-desktop-data/version-pack-data/community/docker/containers:/var/lib/docker/containers:ro
+      - //var/run/docker.sock:/var/run/docker.sock:ro
+      # - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - docker-containers:/var/lib/docker/containers:ro
 
   connect-go-boilerplate:
     image: connect-go-boilerplate:${VERSION}
-    container_name: connect-go-boilerplate
+    deploy:
+      replicas: 3
+    # ports removed - access via envoy proxy only
+
+  envoy-proxy:
+    image: docker.io/envoyproxy/envoy:v1.33-latest
+    container_name: envoy-proxy
     ports:
-      - 8000:8000
+      - 8080:80
+      - 9901:9901
+    volumes:
+      - ./envoy/envoy.yaml:/etc/envoy/envoy.yaml:ro
+      - ./envoy/dynamic:/etc/envoy/dynamic:rw
+    depends_on:
+      - connect-go-boilerplate
+    command: ["/usr/local/bin/envoy", "-c", "/etc/envoy/envoy.yaml"]
+
+  prometheus:
+    image: prom/prometheus:v2.54.0
+    container_name: prometheus
+    depends_on:
+      - envoy-proxy
+    ports:
+      - 9090:9090
+    volumes:
+      - ./prometheus.yaml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --storage.tsdb.retention.time=15d
+      - --web.enable-lifecycle
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:9090/-/ready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - 3000:3000
+    volumes:
+      - grafana-data:/var/lib/grafana
+    depends_on:
+      - prometheus
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
       
 volumes:
   elasticsearch-data:
+  prometheus-data:
+  grafana-data:
+  docker-containers:
+    driver: local
+    driver_opts:
+      type: none
+      device: /var/lib/docker/containers
+      o: bind

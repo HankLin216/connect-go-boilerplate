@@ -1,5 +1,7 @@
 VERSION=$(shell git describe --tags --always)
 YMAL_CONF_PATH=./config.yaml
+HARBOR_REGISTRY=192.168.40.185:30003
+HARBOR_PROJECT=connect-go-boilerplate
 
 .PHONY: install
 # install golang, buf and related tools
@@ -86,22 +88,67 @@ dev-build-image:
 .PHONY: run-image
 # run production image
 run-image:
-	docker run -d --rm --name connect-go-boilerplate -p 8000:8000 connect-go-boilerplate:$(VERSION)
+	docker run -d --rm --name connect-go-boilerplate -p 9000:9000 connect-go-boilerplate:$(VERSION)
 
 .PHONY: dev-run-image
 # run development image
 dev-run-image:
-	docker run -d --rm --name connect-go-boilerplate-dev -p 8000:8000 connect-go-boilerplate:$(VERSION)-dev
+	docker run -d --rm --name connect-go-boilerplate-dev -p 9000:9000 connect-go-boilerplate:$(VERSION)-dev
 
-.PHONY: docker-compose
-# run docker-compose
-docker-compose: build-image
+.PHONY: full-docker-compose
+# build image and run docker-compose
+full-docker-compose: build-image
 	VERSION=$(VERSION) docker-compose up -d
 
-.PHONY: dev-docker-compose
-# run development docker-compose
-dev-docker-compose: dev-build-image
+.PHONY: docker-compose
+# run docker-compose without building
+docker-compose:
+	VERSION=$(VERSION) docker-compose up -d
+
+.PHONY: dev-full-docker-compose
+# build dev image and run docker-compose
+dev-full-docker-compose: dev-build-image
 	VERSION=$(VERSION)-dev docker-compose up -d
+
+.PHONY: dev-docker-compose
+# run development docker-compose without building
+dev-docker-compose:
+	VERSION=$(VERSION)-dev docker-compose up -d
+
+.PHONY: app-docker-compose
+# build image and run app stack (app + envoy)
+app-docker-compose: build-image
+	VERSION=$(VERSION) docker-compose up -d connect-go-boilerplate envoy-proxy
+
+.PHONY: dev-app-docker-compose
+# build dev image and run app stack (app + envoy)
+dev-app-docker-compose: dev-build-image
+	VERSION=$(VERSION)-dev docker-compose up -d connect-go-boilerplate envoy-proxy
+
+.PHONY: push-image
+# push production image to harbor
+push-image: build-image
+	docker tag connect-go-boilerplate:$(VERSION) $(HARBOR_REGISTRY)/$(HARBOR_PROJECT)/connect-go-boilerplate:$(VERSION)
+	docker push $(HARBOR_REGISTRY)/$(HARBOR_PROJECT)/connect-go-boilerplate:$(VERSION)
+
+.PHONY: push-dev-image
+# push development image to harbor
+push-dev-image: dev-build-image
+	docker tag connect-go-boilerplate:$(VERSION)-dev $(HARBOR_REGISTRY)/$(HARBOR_PROJECT)/connect-go-boilerplate:$(VERSION)-dev
+	docker push $(HARBOR_REGISTRY)/$(HARBOR_PROJECT)/connect-go-boilerplate:$(VERSION)-dev
+
+.PHONY: build-client
+# build simple client
+build-client:
+	@echo "Building simple client..."
+	@go build -o bin/client ./cmd/client
+
+
+.PHONY: run-client
+# run simple client with default settings
+run-client: build-client
+	@echo "Running simple client..."
+	@./bin/client
 
 .PHONY: help
 # show help

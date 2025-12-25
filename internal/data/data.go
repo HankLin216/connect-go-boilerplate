@@ -2,9 +2,9 @@ package data
 
 import (
 	"github.com/HankLin216/connect-go-boilerplate/internal/conf"
+	"github.com/HankLin216/go-utils/log"
 
 	"github.com/google/wire"
-	"go.uber.org/zap"
 )
 
 // ProviderSet is data providers.
@@ -16,9 +16,9 @@ type Data struct {
 }
 
 // NewData .
-func NewData(c *conf.Data, logger *zap.Logger) (*Data, func(), error) {
+func NewData(c *conf.Bootstrap) (*Data, func(), error) {
 	cleanup := func() {
-		logger.Info("closing the data resources")
+		log.Info("closing the data resources")
 	}
 	return &Data{}, cleanup, nil
 }

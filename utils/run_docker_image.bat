@@ -1,12 +1,7 @@
 @echo off
 setlocal
 
-RREM Build the Docker image
-if "%ENVIRONMENT%" == "Development" (
-    docker run -d --rm --name %CONTAINER_NAME%-dev -p 8000:8000 connect-go-boilerplate:%GIT_TAG%-dev
-) else (
-    docker run -d --rm --name %CONTAINER_NAME% -p 8000:8000 connect-go-boilerplate:%GIT_TAG%
-)ck if the correct number of arguments are provided
+REM Check if the correct number of arguments are provided
 if "%~2"=="" (
     echo Usage: run_docker_image.bat container_name env
     exit /b 1
@@ -24,7 +19,7 @@ if "%GIT_TAG%"=="" (
     set GIT_TAG=v0.0.0
 )
 
-REM Build the Docker image
+REM Run the Docker image based on environment
 if "%ENVIRONMENT%" == "Development" (
     docker run -d --rm --name %CONTAINER_NAME%-dev -p 9000:9000 connect-go-boilerplate:%GIT_TAG%-dev
 ) else (

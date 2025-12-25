@@ -11,14 +11,15 @@
 filebeat.autodiscover:
   providers:
     - type: docker
+      hints.enabled: true
       templates:
         - condition:
-            equals:
+            contains:
               docker.container.name: "connect-go-boilerplate"
           config:
             - type: container
               paths:
-                - "/var/lib/docker/containers/*/${data.docker.container.id}-json.log"
+                - "/var/lib/docker/containers/${data.docker.container.id}/*.log"
               processors:
                 - add_tags:
                     tags: [json]
@@ -48,5 +49,5 @@ output.elasticsearch:
     #         container.name: kibana
     - index: "connect-go-%{+yyyy.MM.dd}"
       when.or:
-        - equals:
+        - contains:
             container.name: connect-go-boilerplate

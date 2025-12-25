@@ -1,0 +1,59 @@
+# Default values for connect-go-boilerplate
+
+# Replica count
+replicaCount: 2
+
+# Image configuration
+image:
+  registry: 192.168.40.185:30003
+  repository: connect-go-boilerplate/connect-go-boilerplate
+  tag: v0.0.1-23-g2c6a83d
+  pullPolicy: IfNotPresent
+
+# ImagePullSecrets for private registry authentication
+imagePullSecrets:
+  - name: harbor-secret
+
+# Service configuration
+service:
+  type: NodePort
+  port: 80
+  targetPort: 9000
+  nodePort: 30000
+  name: connect-go-boilerplate
+
+# Resources limits and requests
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 250m
+    memory: 256Mi
+
+# Health check - Liveness Probe (gRPC)
+# Native gRPC health check
+livenessProbe:
+  grpc:
+    port: 9000
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+# Health check - Readiness Probe (gRPC)
+# Native gRPC health check
+readinessProbe:
+  grpc:
+    port: 9000
+  initialDelaySeconds: 10
+  periodSeconds: 5
+  timeoutSeconds: 3
+  failureThreshold: 2
+
+# Harbor registry credentials
+harborRegistry:
+  url: 192.168.40.185:30003
+  username: admin
+  password: ""
+  email: admin@harbor.local

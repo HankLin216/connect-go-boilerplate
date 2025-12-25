@@ -1,0 +1,12 @@
+apiVersion: v2
+name: connect-go-boilerplate
+description: A Helm chart for Kubernetes deployment of connect-go-boilerplate application
+type: application
+version: 0.0.1
+appVersion: "0.0.1"
+home: https://github.com/HankLin216/connect-go-boilerplate
+sources:
+  - https://github.com/HankLin216/connect-go-boilerplate
+maintainers:
+  - name: Hank Lin
+    email: hanklin21000@gmail.com
