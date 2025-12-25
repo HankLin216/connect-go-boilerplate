@@ -76,7 +76,8 @@ services:
       - ./filebeat.docker.yml:/usr/share/filebeat/filebeat.yml:ro
       # - /mnt/wsl/docker-desktop-data/version-pack-data/community/docker/containers:/var/lib/docker/containers:ro
       - //var/run/docker.sock:/var/run/docker.sock:ro
-      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      # - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - docker-containers:/var/lib/docker/containers:ro
 
   connect-go-boilerplate:
     image: connect-go-boilerplate:${VERSION}
@@ -117,7 +118,26 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - 3000:3000
+    volumes:
+      - grafana-data:/var/lib/grafana
+    depends_on:
+      - prometheus
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
       
 volumes:
   elasticsearch-data:
   prometheus-data:
+  grafana-data:
+  docker-containers:
+    driver: local
+    driver_opts:
+      type: none
+      device: /var/lib/docker/containers
+      o: bind
