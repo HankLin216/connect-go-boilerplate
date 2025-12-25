@@ -127,6 +127,19 @@ push-dev-image: dev-build-image
 	docker tag connect-go-boilerplate:$(VERSION)-dev $(HARBOR_REGISTRY)/$(HARBOR_PROJECT)/connect-go-boilerplate:$(VERSION)-dev
 	docker push $(HARBOR_REGISTRY)/$(HARBOR_PROJECT)/connect-go-boilerplate:$(VERSION)-dev
 
+.PHONY: build-client
+# build simple client
+build-client:
+	@echo "Building simple client..."
+	@go build -o bin/client ./cmd/client
+
+
+.PHONY: run-client
+# run simple client with default settings
+run-client: build-client
+	@echo "Running simple client..."
+	@./bin/client
+
 .PHONY: help
 # show help
 help:
@@ -144,18 +157,5 @@ help:
 		} \
 	} \
 	{ lastLine = $$0 }' $(MAKEFILE_LIST)
-
-.PHONY: build-client
-# build simple client
-build-client:
-	@echo "Building simple client..."
-	@go build -o bin/client ./cmd/client
-
-
-.PHONY: run-client
-# run simple client with default settings
-run-client: build-client
-	@echo "Running simple client..."
-	@./bin/client
 
 .DEFAULT_GOAL := help
