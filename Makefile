@@ -115,6 +115,16 @@ dev-full-docker-compose: dev-build-image
 dev-docker-compose:
 	VERSION=$(VERSION)-dev docker-compose up -d
 
+.PHONY: app-docker-compose
+# build image and run app stack (app + envoy)
+app-docker-compose: build-image
+	VERSION=$(VERSION) docker-compose up -d connect-go-boilerplate envoy-proxy
+
+.PHONY: dev-app-docker-compose
+# build dev image and run app stack (app + envoy)
+dev-app-docker-compose: dev-build-image
+	VERSION=$(VERSION)-dev docker-compose up -d connect-go-boilerplate envoy-proxy
+
 .PHONY: push-image
 # push production image to harbor
 push-image: build-image
