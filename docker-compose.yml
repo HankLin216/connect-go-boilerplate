@@ -74,9 +74,9 @@ services:
       - -strict.perms=false
     volumes:
       - ./filebeat.docker.yml:/usr/share/filebeat/filebeat.yml:ro
-      - /mnt/wsl/docker-desktop-data/version-pack-data/community/docker/containers:/var/lib/docker/containers:ro
-      #- /var/lib/docker/containers:/var/lib/docker/containers:ro
-      - /var/run/docker.sock:/var/run/docker.sock:ro
+      # - /mnt/wsl/docker-desktop-data/version-pack-data/community/docker/containers:/var/lib/docker/containers:ro
+      - //var/run/docker.sock:/var/run/docker.sock:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
 
   connect-go-boilerplate:
     image: connect-go-boilerplate:${VERSION}
@@ -88,7 +88,7 @@ services:
     image: docker.io/envoyproxy/envoy:v1.33-latest
     container_name: envoy-proxy
     ports:
-      - 80:80
+      - 8080:80
       - 9901:9901
     volumes:
       - ./envoy/envoy.yaml:/etc/envoy/envoy.yaml:ro

@@ -11,6 +11,7 @@
 filebeat.autodiscover:
   providers:
     - type: docker
+      hints.enabled: true
       templates:
         - condition:
             contains:
@@ -18,7 +19,7 @@ filebeat.autodiscover:
           config:
             - type: container
               paths:
-                - "/var/lib/docker/containers/*/${data.docker.container.id}-json.log"
+                - "/var/lib/docker/containers/${data.docker.container.id}/*.log"
               processors:
                 - add_tags:
                     tags: [json]
