@@ -18,6 +18,30 @@ resources:
                   typed_config:
                     "@type": type.googleapis.com/envoy.extensions.access_loggers.stream.v3.StdoutAccessLog
               http_filters:
+                - name: envoy.filters.http.jwt_authn
+                  typed_config:
+                    "@type": type.googleapis.com/envoy.extensions.filters.http.jwt_authn.v3.JwtAuthentication
+                    providers:
+                      keycloak_provider:
+                        issuer: http://localhost:8080/auth/realms/connect-go
+                        remote_jwks:
+                          http_uri:
+                            uri: http://keycloak:8080/auth/realms/connect-go/protocol/openid-connect/certs
+                            cluster: keycloak_cluster
+                            timeout: 5s
+                          cache_duration:
+                            seconds: 300
+                        forward: true
+                        forward_payload_header: x-jwt-payload
+                    rules:
+                      - match:
+                          prefix: "/auth/"
+                      - match:
+                          prefix: "/grpc.reflection"
+                      - match:
+                          prefix: "/"
+                        requires:
+                          provider_name: keycloak_provider
                 - name: envoy.filters.http.grpc_web
                   typed_config:
                     "@type": type.googleapis.com/envoy.extensions.filters.http.grpc_web.v3.GrpcWeb
@@ -34,15 +58,6 @@ resources:
                     domains:
                       ["connect-go.phison.com", "*"]
                     routes:
-                      # - match:
-                      #     prefix: "/"
-                      #     headers:
-                      #       - name: "content-type"
-                      #         string_match:
-                      #           prefix: "application/grpc"
-                      #   route:
-                      #     cluster: connect_go_cluster
-                      #     timeout: 30s
                       - match:
                           prefix: "/auth/"
                         route:
