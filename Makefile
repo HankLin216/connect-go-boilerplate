@@ -125,6 +125,15 @@ app-docker-compose:
 dev-app-docker-compose:
 	VERSION=$(VERSION)-dev docker-compose up -d connect-go-boilerplate envoy-proxy keycloak
 
+.PHONY: export-realm
+# export keycloak realm config to json file
+export-realm:
+	@echo "Exporting Keycloak realm..."
+	@docker exec keycloak /opt/keycloak/bin/kc.sh export --dir /tmp/export --realm connect-go --users realm_file
+	@docker cp keycloak:/tmp/export/connect-go-realm.json ./keycloak-realm.json
+	@docker exec keycloak rm -rf /tmp/export
+	@echo "Realm exported to ./keycloak-realm.json"
+
 .PHONY: helm-install
 # install helm chart without building image
 helm-install:
