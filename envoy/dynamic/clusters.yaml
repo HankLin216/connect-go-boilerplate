@@ -39,3 +39,18 @@ resources:
         healthy_threshold: 1
         grpc_health_check:
           service_name: "grpc.health.v1.Health"
+
+  - "@type": type.googleapis.com/envoy.config.cluster.v3.Cluster
+    name: keycloak_cluster
+    type: STRICT_DNS
+    connect_timeout: 5s
+    lb_policy: ROUND_ROBIN
+    load_assignment:
+      cluster_name: keycloak_cluster
+      endpoints:
+        - lb_endpoints:
+            - endpoint:
+                address:
+                  socket_address:
+                    address: keycloak
+                    port_value: 8080

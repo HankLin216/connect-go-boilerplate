@@ -44,6 +44,11 @@ resources:
                       #     cluster: connect_go_cluster
                       #     timeout: 30s
                       - match:
+                          prefix: "/auth/"
+                        route:
+                          cluster: keycloak_cluster
+                          timeout: 30s
+                      - match:
                           prefix: "/"
                         route:
                           cluster: connect_go_cluster
