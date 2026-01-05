@@ -34,4 +34,4 @@ services:
       KC_DB_URL: jdbc:postgresql://postgres:5432/keycloak
       KC_DB_USERNAME: postgres
       KC_DB_PASSWORD: password
-    # ports removed - access via envoy proxy only
+      KC_HTTP_RELATIVE_PATH: /auth
