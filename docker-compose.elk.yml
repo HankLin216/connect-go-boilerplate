@@ -1,0 +1,93 @@
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.16.1
+    container_name: elasticsearch
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - xpack.security.http.ssl.enabled=false
+      - xpack.ml.use_auto_machine_memory_percent=true
+      - ES_JAVA_OPTS=-Xms128m -Xmx2g
+      - cluster.routing.allocation.disk.watermark.low=1gb
+      - cluster.routing.allocation.disk.watermark.high=1gb
+      - cluster.routing.allocation.disk.watermark.flood_stage=1gb
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "curl --output /dev/null --silent --fail http://elasticsearch:9200",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  kibana:
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    image: docker.elastic.co/kibana/kibana:8.16.1
+    container_name: kibana
+    ports:
+      - 5601:5601
+    environment:
+      - SERVER_NAME=kibana
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - XPACK_SECURITY_ENABLED=false
+      - XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY=
+      - ELASTICSEARCH_SECURITY_ENABLED=false
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "curl -s -I http://kibana:5601 | grep -q 'HTTP/1.1 302 Found'",
+        ]
+      interval: 10s
+      timeout: 10s
+      retries: 20
+  
+  logstash:
+    image: docker.elastic.co/logstash/logstash:8.16.1
+    container_name: logstash
+    volumes:
+      - ./logstash.conf:/usr/share/logstash/pipeline/logstash.conf:ro
+    ports:
+      - 5044:5044
+      - 9600:9600
+    environment:
+      - LS_JAVA_OPTS=-Xmx256m -Xms256m
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+
+  filebeat:
+    depends_on:
+      logstash:
+        condition: service_started
+    image: docker.elastic.co/beats/filebeat:8.16.1
+    container_name: filebeat
+    user: root
+    command:
+      - filebeat
+      - -e
+      - -strict.perms=false
+    volumes:
+      - ./filebeat.docker.yml:/usr/share/filebeat/filebeat.yml:ro
+      - //var/run/docker.sock:/var/run/docker.sock:ro
+      - docker-containers:/var/lib/docker/containers:ro
+
+volumes:
+  elasticsearch-data:
+  docker-containers:
+    driver: local
+    driver_opts:
+      type: none
+      device: /var/lib/docker/containers
+      o: bind

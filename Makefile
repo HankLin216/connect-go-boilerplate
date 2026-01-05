@@ -116,14 +116,14 @@ dev-docker-compose:
 	VERSION=$(VERSION)-dev docker-compose up -d
 
 .PHONY: app-docker-compose
-# build image and run app stack (app + envoy)
-app-docker-compose: build-image
-	VERSION=$(VERSION) docker-compose up -d connect-go-boilerplate envoy-proxy
+# run app stack (app + envoy + keycloak)
+app-docker-compose:
+	VERSION=$(VERSION) docker-compose up -d connect-go-boilerplate envoy-proxy keycloak
 
 .PHONY: dev-app-docker-compose
-# build dev image and run app stack (app + envoy)
-dev-app-docker-compose: dev-build-image
-	VERSION=$(VERSION)-dev docker-compose up -d connect-go-boilerplate envoy-proxy
+# run app stack (app + envoy + keycloak)
+dev-app-docker-compose:
+	VERSION=$(VERSION)-dev docker-compose up -d connect-go-boilerplate envoy-proxy keycloak
 
 .PHONY: helm-install
 # install helm chart without building image
@@ -140,18 +140,6 @@ full-helm-install: build-image helm-install
 # uninstall helm chart
 helm-uninstall:
 	helm uninstall connect-go-boilerplate
-
-.PHONY: push-image
-# push production image to harbor
-push-image: build-image
-	docker tag connect-go-boilerplate:$(VERSION) $(HARBOR_REGISTRY)/$(HARBOR_PROJECT)/connect-go-boilerplate:$(VERSION)
-	docker push $(HARBOR_REGISTRY)/$(HARBOR_PROJECT)/connect-go-boilerplate:$(VERSION)
-
-.PHONY: push-dev-image
-# push development image to harbor
-push-dev-image: dev-build-image
-	docker tag connect-go-boilerplate:$(VERSION)-dev $(HARBOR_REGISTRY)/$(HARBOR_PROJECT)/connect-go-boilerplate:$(VERSION)-dev
-	docker push $(HARBOR_REGISTRY)/$(HARBOR_PROJECT)/connect-go-boilerplate:$(VERSION)-dev
 
 .PHONY: build-client
 # build simple client

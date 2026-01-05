@@ -1,0 +1,37 @@
+services:
+  connect-go-boilerplate:
+    image: connect-go-boilerplate:${VERSION}
+    deploy:
+      replicas: 3
+    # ports removed - access via envoy proxy only
+
+  envoy-proxy:
+    image: docker.io/envoyproxy/envoy:v1.33-latest
+    container_name: envoy-proxy
+    ports:
+      - 8080:80
+      - 9901:9901
+    volumes:
+      - ./envoy/envoy.yaml:/etc/envoy/envoy.yaml:ro
+      - ./envoy/dynamic:/etc/envoy/dynamic:rw
+    depends_on:
+      - connect-go-boilerplate
+    command: ["/usr/local/bin/envoy", "-c", "/etc/envoy/envoy.yaml"]
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.0.5
+    container_name: keycloak
+    command: start-dev
+    depends_on:
+      postgres:
+        condition: service_healthy
+      postgres-init:
+        condition: service_completed_successfully
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgres:5432/keycloak
+      KC_DB_USERNAME: postgres
+      KC_DB_PASSWORD: password
+    # ports removed - access via envoy proxy only
