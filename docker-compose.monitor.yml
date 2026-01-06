@@ -2,8 +2,6 @@ services:
   prometheus:
     image: prom/prometheus:v2.54.0
     container_name: prometheus
-    ports:
-      - 9090:9090
     volumes:
       - ./prometheus.yaml:/etc/prometheus/prometheus.yml:ro
       - prometheus-data:/prometheus
@@ -12,8 +10,10 @@ services:
       - --storage.tsdb.path=/prometheus
       - --storage.tsdb.retention.time=15d
       - --web.enable-lifecycle
+      - --web.external-url=/prometheus/
+      - --web.route-prefix=/prometheus/
     healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://localhost:9090/-/ready"]
+      test: ["CMD", "wget", "-qO-", "http://localhost:9090/prometheus/-/ready"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -21,14 +21,14 @@ services:
   grafana:
     image: grafana/grafana:latest
     container_name: grafana
-    ports:
-      - 3000:3000
     volumes:
       - grafana-data:/var/lib/grafana
     depends_on:
       - prometheus
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_SERVER_ROOT_URL=http://localhost:8080/grafana
+      - GF_SERVER_SERVE_FROM_SUB_PATH=true
 
 volumes:
   prometheus-data:

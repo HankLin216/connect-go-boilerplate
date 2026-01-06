@@ -35,6 +35,12 @@ resources:
                         forward_payload_header: x-jwt-payload
                     rules:
                       - match:
+                          prefix: "/grafana/"
+                      - match:
+                          prefix: "/prometheus/"
+                      - match:
+                          prefix: "/kibana/"
+                      - match:
                           prefix: "/auth/"
                       - match:
                           prefix: "/grpc.reflection"
@@ -58,6 +64,18 @@ resources:
                     domains:
                       ["connect-go.phison.com", "*"]
                     routes:
+                      - match:
+                          prefix: "/grafana/"
+                        route:
+                          cluster: grafana_cluster
+                      - match:
+                          prefix: "/prometheus/"
+                        route:
+                          cluster: prometheus_cluster
+                      - match:
+                          prefix: "/kibana/"
+                        route:
+                          cluster: kibana_cluster
                       - match:
                           prefix: "/auth/"
                         route:

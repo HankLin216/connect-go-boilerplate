@@ -1,9 +1,10 @@
 # Project Todo List
 
 ## 1. Network Security & Proxy Configuration
-- [ ] **Hide Service Ports**: Ensure all backend services (Keycloak, Connect-Go App, etc.) are not exposed directly to the host. All external traffic must go through Envoy Proxy.
-    - [ ] Update `docker-compose.app.yml` to remove `ports` mapping for `connect-go-boilerplate` and `keycloak`.
-    - [ ] Verify Envoy routing rules in `envoy/dynamic/listeners.yaml` and `clusters.yaml`.
+- [x] **Hide Service Ports**: Ensure all backend services (Keycloak, Connect-Go App, etc.) are not exposed directly to the host. All external traffic must go through Envoy Proxy.
+    - [x] Update `docker-compose.app.yml` to remove `ports` mapping for `connect-go-boilerplate` and `keycloak`.
+    - [x] Update `docker-compose.monitor.yml` and `docker-compose.elk.yml` to remove exposed ports.
+    - [x] Verify Envoy routing rules in `envoy/dynamic/listeners.yaml` and `clusters.yaml` and add routes for monitoring services.
 
 ## 2. Database Schema Management
 - [ ] **PostgreSQL Schema Migration**: Implement a mechanism to manage database schema changes within the codebase.

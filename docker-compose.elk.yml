@@ -4,8 +4,8 @@ services:
     container_name: elasticsearch
     volumes:
       - elasticsearch-data:/usr/share/elasticsearch/data
-    ports:
-      - 9200:9200
+    # ports:
+    #   - 9200:9200
     environment:
       - discovery.type=single-node
       - xpack.security.enabled=false
@@ -35,19 +35,21 @@ services:
         condition: service_healthy
     image: docker.elastic.co/kibana/kibana:8.16.1
     container_name: kibana
-    ports:
-      - 5601:5601
+    # ports:
+    #   - 5601:5601
     environment:
       - SERVER_NAME=kibana
       - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
       - XPACK_SECURITY_ENABLED=false
       - XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY=
       - ELASTICSEARCH_SECURITY_ENABLED=false
+      - SERVER_BASEPATH=/kibana
+      - SERVER_REWRITEBASEPATH=true
     healthcheck:
       test:
         [
           "CMD-SHELL",
-          "curl -s -I http://kibana:5601 | grep -q 'HTTP/1.1 302 Found'",
+          "curl -s -I http://kibana:5601/kibana | grep -q 'HTTP/1.1 302 Found'",
         ]
       interval: 10s
       timeout: 10s
@@ -58,9 +60,9 @@ services:
     container_name: logstash
     volumes:
       - ./logstash.conf:/usr/share/logstash/pipeline/logstash.conf:ro
-    ports:
-      - 5044:5044
-      - 9600:9600
+    # ports:
+    #   - 5044:5044
+    #   - 9600:9600
     environment:
       - LS_JAVA_OPTS=-Xmx256m -Xms256m
     depends_on:
