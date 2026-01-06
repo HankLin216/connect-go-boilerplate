@@ -9,7 +9,7 @@ services:
     image: docker.io/envoyproxy/envoy:v1.33-latest
     container_name: envoy-proxy
     ports:
-      - 8080:80
+      - 8080:8080
       - 9901:9901
     volumes:
       - ./envoy/envoy.yaml:/etc/envoy/envoy.yaml:ro
