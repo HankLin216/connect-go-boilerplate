@@ -99,3 +99,18 @@ resources:
                   socket_address:
                     address: kibana
                     port_value: 5601
+
+  - "@type": type.googleapis.com/envoy.config.cluster.v3.Cluster
+    name: jaeger_cluster
+    type: STRICT_DNS
+    connect_timeout: 5s
+    lb_policy: ROUND_ROBIN
+    load_assignment:
+      cluster_name: jaeger_cluster
+      endpoints:
+        - lb_endpoints:
+            - endpoint:
+                address:
+                  socket_address:
+                    address: jaeger
+                    port_value: 16686

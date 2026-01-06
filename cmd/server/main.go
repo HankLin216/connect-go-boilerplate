@@ -10,6 +10,7 @@ import (
 	"github.com/HankLin216/go-utils/config"
 	"github.com/HankLin216/go-utils/config/file"
 	"github.com/HankLin216/go-utils/log"
+	"github.com/HankLin216/go-utils/tracer"
 	"github.com/rs/cors"
 	"go.elastic.co/ecszap"
 	"go.uber.org/zap"
@@ -83,6 +84,18 @@ func main() {
 		panic(err)
 	}
 
+	// init tracer
+	// we ignore the returned provider here as it sets the global one, but we keep cleanup
+	_, cleanup, err := tracer.NewTracerProvider(toTracerConfig(&bc), &tracer.Info{
+		Name:    Name,
+		Version: Version,
+		Env:     Env,
+	})
+	if err != nil {
+		panic(err)
+	}
+	defer cleanup()
+
 	// start app
 	log.Info("Server infos",
 		zap.String("Name", Name),
@@ -102,5 +115,12 @@ func main() {
 	// start and wait for stop signal
 	if err := app.ListenAndServe(); err != nil {
 		panic(err)
+	}
+}
+
+func toTracerConfig(bc *conf.Bootstrap) *tracer.Config {
+	return &tracer.Config{
+		Enable:   bc.Server.Trace.Enable,
+		Endpoint: bc.Server.Trace.Endpoint,
 	}
 }

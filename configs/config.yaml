@@ -6,6 +6,9 @@ server:
     addr: 0.0.0.0:9000
     # Request timeout (mapped to google.protobuf.Duration)
     timeout: 5s
+  trace:
+    enable: true
+    endpoint: otel-collector:4317
 
 data:
   database:

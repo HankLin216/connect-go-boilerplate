@@ -77,6 +77,7 @@ func (x *Bootstrap) GetData() *Data {
 type Server struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Http          *Server_HTTP           `protobuf:"bytes,1,opt,name=http,proto3" json:"http,omitempty"`
+	Trace         *Server_Trace          `protobuf:"bytes,4,opt,name=trace,proto3" json:"trace,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -114,6 +115,13 @@ func (*Server) Descriptor() ([]byte, []int) {
 func (x *Server) GetHttp() *Server_HTTP {
 	if x != nil {
 		return x.Http
+	}
+	return nil
+}
+
+func (x *Server) GetTrace() *Server_Trace {
+	if x != nil {
+		return x.Trace
 	}
 	return nil
 }
@@ -230,6 +238,58 @@ func (x *Server_HTTP) GetTimeout() *durationpb.Duration {
 	return nil
 }
 
+type Server_Trace struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Enable        bool                   `protobuf:"varint,1,opt,name=enable,proto3" json:"enable,omitempty"`
+	Endpoint      string                 `protobuf:"bytes,2,opt,name=endpoint,proto3" json:"endpoint,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Server_Trace) Reset() {
+	*x = Server_Trace{}
+	mi := &file_internal_conf_conf_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Server_Trace) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Server_Trace) ProtoMessage() {}
+
+func (x *Server_Trace) ProtoReflect() protoreflect.Message {
+	mi := &file_internal_conf_conf_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Server_Trace.ProtoReflect.Descriptor instead.
+func (*Server_Trace) Descriptor() ([]byte, []int) {
+	return file_internal_conf_conf_proto_rawDescGZIP(), []int{1, 1}
+}
+
+func (x *Server_Trace) GetEnable() bool {
+	if x != nil {
+		return x.Enable
+	}
+	return false
+}
+
+func (x *Server_Trace) GetEndpoint() string {
+	if x != nil {
+		return x.Endpoint
+	}
+	return ""
+}
+
 type Data_Database struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Driver        string                 `protobuf:"bytes,1,opt,name=driver,proto3" json:"driver,omitempty"`
@@ -240,7 +300,7 @@ type Data_Database struct {
 
 func (x *Data_Database) Reset() {
 	*x = Data_Database{}
-	mi := &file_internal_conf_conf_proto_msgTypes[4]
+	mi := &file_internal_conf_conf_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -252,7 +312,7 @@ func (x *Data_Database) String() string {
 func (*Data_Database) ProtoMessage() {}
 
 func (x *Data_Database) ProtoReflect() protoreflect.Message {
-	mi := &file_internal_conf_conf_proto_msgTypes[4]
+	mi := &file_internal_conf_conf_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -294,7 +354,7 @@ type Data_Redis struct {
 
 func (x *Data_Redis) Reset() {
 	*x = Data_Redis{}
-	mi := &file_internal_conf_conf_proto_msgTypes[5]
+	mi := &file_internal_conf_conf_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -306,7 +366,7 @@ func (x *Data_Redis) String() string {
 func (*Data_Redis) ProtoMessage() {}
 
 func (x *Data_Redis) ProtoReflect() protoreflect.Message {
-	mi := &file_internal_conf_conf_proto_msgTypes[5]
+	mi := &file_internal_conf_conf_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -357,13 +417,17 @@ const file_internal_conf_conf_proto_rawDesc = "" +
 	"\x18internal/conf/conf.proto\x12\fconnect.conf\x1a\x1egoogle/protobuf/duration.proto\"a\n" +
 	"\tBootstrap\x12,\n" +
 	"\x06server\x18\x01 \x01(\v2\x14.connect.conf.ServerR\x06server\x12&\n" +
-	"\x04data\x18\x02 \x01(\v2\x12.connect.conf.DataR\x04data\"\xa2\x01\n" +
+	"\x04data\x18\x02 \x01(\v2\x12.connect.conf.DataR\x04data\"\x91\x02\n" +
 	"\x06Server\x12-\n" +
-	"\x04http\x18\x01 \x01(\v2\x19.connect.conf.Server.HTTPR\x04http\x1ai\n" +
+	"\x04http\x18\x01 \x01(\v2\x19.connect.conf.Server.HTTPR\x04http\x120\n" +
+	"\x05trace\x18\x04 \x01(\v2\x1a.connect.conf.Server.TraceR\x05trace\x1ai\n" +
 	"\x04HTTP\x12\x18\n" +
 	"\anetwork\x18\x01 \x01(\tR\anetwork\x12\x12\n" +
 	"\x04addr\x18\x02 \x01(\tR\x04addr\x123\n" +
-	"\atimeout\x18\x03 \x01(\v2\x19.google.protobuf.DurationR\atimeout\"\xe1\x02\n" +
+	"\atimeout\x18\x03 \x01(\v2\x19.google.protobuf.DurationR\atimeout\x1a;\n" +
+	"\x05Trace\x12\x16\n" +
+	"\x06enable\x18\x01 \x01(\bR\x06enable\x12\x1a\n" +
+	"\bendpoint\x18\x02 \x01(\tR\bendpoint\"\xe1\x02\n" +
 	"\x04Data\x127\n" +
 	"\bdatabase\x18\x01 \x01(\v2\x1b.connect.conf.Data.DatabaseR\bdatabase\x12.\n" +
 	"\x05redis\x18\x02 \x01(\v2\x18.connect.conf.Data.RedisR\x05redis\x1a:\n" +
@@ -389,30 +453,32 @@ func file_internal_conf_conf_proto_rawDescGZIP() []byte {
 	return file_internal_conf_conf_proto_rawDescData
 }
 
-var file_internal_conf_conf_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
+var file_internal_conf_conf_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
 var file_internal_conf_conf_proto_goTypes = []any{
 	(*Bootstrap)(nil),           // 0: connect.conf.Bootstrap
 	(*Server)(nil),              // 1: connect.conf.Server
 	(*Data)(nil),                // 2: connect.conf.Data
 	(*Server_HTTP)(nil),         // 3: connect.conf.Server.HTTP
-	(*Data_Database)(nil),       // 4: connect.conf.Data.Database
-	(*Data_Redis)(nil),          // 5: connect.conf.Data.Redis
-	(*durationpb.Duration)(nil), // 6: google.protobuf.Duration
+	(*Server_Trace)(nil),        // 4: connect.conf.Server.Trace
+	(*Data_Database)(nil),       // 5: connect.conf.Data.Database
+	(*Data_Redis)(nil),          // 6: connect.conf.Data.Redis
+	(*durationpb.Duration)(nil), // 7: google.protobuf.Duration
 }
 var file_internal_conf_conf_proto_depIdxs = []int32{
 	1, // 0: connect.conf.Bootstrap.server:type_name -> connect.conf.Server
 	2, // 1: connect.conf.Bootstrap.data:type_name -> connect.conf.Data
 	3, // 2: connect.conf.Server.http:type_name -> connect.conf.Server.HTTP
-	4, // 3: connect.conf.Data.database:type_name -> connect.conf.Data.Database
-	5, // 4: connect.conf.Data.redis:type_name -> connect.conf.Data.Redis
-	6, // 5: connect.conf.Server.HTTP.timeout:type_name -> google.protobuf.Duration
-	6, // 6: connect.conf.Data.Redis.read_timeout:type_name -> google.protobuf.Duration
-	6, // 7: connect.conf.Data.Redis.write_timeout:type_name -> google.protobuf.Duration
-	8, // [8:8] is the sub-list for method output_type
-	8, // [8:8] is the sub-list for method input_type
-	8, // [8:8] is the sub-list for extension type_name
-	8, // [8:8] is the sub-list for extension extendee
-	0, // [0:8] is the sub-list for field type_name
+	4, // 3: connect.conf.Server.trace:type_name -> connect.conf.Server.Trace
+	5, // 4: connect.conf.Data.database:type_name -> connect.conf.Data.Database
+	6, // 5: connect.conf.Data.redis:type_name -> connect.conf.Data.Redis
+	7, // 6: connect.conf.Server.HTTP.timeout:type_name -> google.protobuf.Duration
+	7, // 7: connect.conf.Data.Redis.read_timeout:type_name -> google.protobuf.Duration
+	7, // 8: connect.conf.Data.Redis.write_timeout:type_name -> google.protobuf.Duration
+	9, // [9:9] is the sub-list for method output_type
+	9, // [9:9] is the sub-list for method input_type
+	9, // [9:9] is the sub-list for extension type_name
+	9, // [9:9] is the sub-list for extension extendee
+	0, // [0:9] is the sub-list for field type_name
 }
 
 func init() { file_internal_conf_conf_proto_init() }
@@ -426,7 +492,7 @@ func file_internal_conf_conf_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_internal_conf_conf_proto_rawDesc), len(file_internal_conf_conf_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   6,
+			NumMessages:   7,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

@@ -41,6 +41,8 @@ resources:
                       - match:
                           prefix: "/kibana/"
                       - match:
+                          prefix: "/jaeger/"
+                      - match:
                           prefix: "/auth/"
                       - match:
                           prefix: "/grpc.reflection"
@@ -76,6 +78,10 @@ resources:
                           prefix: "/kibana/"
                         route:
                           cluster: kibana_cluster
+                      - match:
+                          prefix: "/jaeger/"
+                        route:
+                          cluster: jaeger_cluster
                       - match:
                           prefix: "/auth/"
                         route:

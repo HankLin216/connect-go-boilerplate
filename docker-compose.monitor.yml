@@ -30,6 +30,26 @@ services:
       - GF_SERVER_ROOT_URL=http://localhost:8080/grafana
       - GF_SERVER_SERVE_FROM_SUB_PATH=true
 
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    container_name: jaeger
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true
+      - QUERY_BASE_PATH=/jaeger
+    # ports:
+    #   - "16686:16686"
+    #   - "14268"
+    #   - "14250"
+
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:latest
+    container_name: otel-collector
+    command: ["--config=/etc/otel-collector-config.yaml"]
+    volumes:
+      - ./otel-collector-config.yaml:/etc/otel-collector-config.yaml
+    depends_on:
+      - jaeger
+
 volumes:
   prometheus-data:
   grafana-data:
