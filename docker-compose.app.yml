@@ -23,7 +23,7 @@ services:
     container_name: keycloak
     command: start-dev --import-realm
     volumes:
-      - ./keycloak-realm.json:/opt/keycloak/data/import/realm.json:ro
+      - ./keycloak-realm.json:/opt/keycloak/data/import/realm.json:rw
     depends_on:
       postgres:
         condition: service_healthy
