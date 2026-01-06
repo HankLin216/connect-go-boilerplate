@@ -85,6 +85,22 @@
 			"type": "shell",
 			"command": ".\\utils\\helm_uninstall.bat",
 			"problemMatcher": []
+		},
+		{
+			"label": "Restart Service (win)",
+			"type": "shell",
+			"command": ".\\utils\\run_compose.bat",
+			"args": [
+				"restart",
+				"${input:serviceToRestart}"
+			],
+			"problemMatcher": []
+		},
+		{
+			"label": "Export Keycloak Realm (win)",
+			"type": "shell",
+			"command": ".\\utils\\export_realm.bat",
+			"problemMatcher": []
 		}
 	],
 	"inputs": [
@@ -98,14 +114,21 @@
 				"dev-app",
 				"down"
 			],
-			"description": "Select the docker compose action",
-			"default": "full"
+			"description": "Select user action"
+		},
+		{
+			"id": "helmAction",
+			"type": "pickString",
+			"options": [
+				"install",
+				"full-install"
+			],
+			"description": "Select helm action"
 		},
 		{
 			"id": "protoDirectory",
 			"type": "promptString",
-			"description": "Enter the directory for proto files",
-			"default": "${workspaceFolder}\\api"
+			"description": "Enter the relative path to the proto files directory (e.g., api/greeter)"
 		},
 		{
 			"id": "buildTarget",
@@ -114,20 +137,24 @@
 				"Production",
 				"Development"
 			],
-			"description": "Select the build target",
-			"default": "Production"
+			"description": "Select build target (Production or Development)"
 		},
 		{
-			"id": "helmAction",
+			"id": "serviceToRestart",
 			"type": "pickString",
 			"options": [
-				"install",
-				"dev-install",
-				"full",
-				"dev-full"
+				"connect-go-boilerplate",
+				"envoy-proxy",
+				"keycloak",
+				"postgres",
+				"prometheus",
+				"grafana",
+				"elasticsearch",
+				"kibana",
+				"logstash",
+				"filebeat"
 			],
-			"description": "Select the helm install action",
-			"default": "install"
+			"description": "Select service to restart"
 		}
 	]
 }
