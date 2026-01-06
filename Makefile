@@ -48,7 +48,6 @@ config:
 	@buf generate --path internal
 
 .PHONY: restart-service
-# restart a specific service with VERSION
 # usage: make restart-service service=<service_name>
 restart-service:
 	@if [ -z "$(service)" ]; then \
@@ -165,7 +164,6 @@ helm-uninstall:
 build-client:
 	@echo "Building simple client..."
 	@go build -o bin/client ./cmd/client
-
 
 .PHONY: run-client
 # run simple client with default settings
