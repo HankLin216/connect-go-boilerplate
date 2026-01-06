@@ -47,6 +47,16 @@ config:
 	@echo "Generating config proto files..."
 	@buf generate --path internal
 
+.PHONY: restart-service
+# restart a specific service with VERSION
+# usage: make restart-service service=<service_name>
+restart-service:
+	@if [ -z "$(service)" ]; then \
+		echo "Usage: make restart-service service=<service_name>"; \
+		exit 1; \
+	fi
+	VERSION=$(VERSION) docker-compose up -d --no-deps --force-recreate $(service)
+
 .PHONY: tidy
 # tidy go modules
 tidy:
@@ -180,5 +190,4 @@ help:
 		} \
 	} \
 	{ lastLine = $$0 }' $(MAKEFILE_LIST)
-
 .DEFAULT_GOAL := help
