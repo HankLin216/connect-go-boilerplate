@@ -1,5 +1,9 @@
 # Default values for connect-go-boilerplate
 
+# Gateway Configuration (Global or Shared)
+gateway:
+  enabled: true
+
 connectGoBoilerplate:
   # Replica count
   replicaCount: 2
@@ -17,10 +21,10 @@ connectGoBoilerplate:
 
   # Service configuration
   service:
-    type: NodePort
+    type: ClusterIP
     port: 80
     targetPort: 9000
-    nodePort: 30000
+    # nodePort: 30000
     name: connect-go-boilerplate
 
   # Resources limits and requests

@@ -18,7 +18,7 @@ import (
 )
 
 var (
-	serverAddr = flag.String("addr", "http://connect-go.phison.com", "Server address")
+	serverAddr = flag.String("addr", "http://localhost:30814", "Server address")
 	interval   = flag.Duration("interval", 300*time.Millisecond, "Call interval")
 	timeout    = flag.Duration("timeout", 10*time.Second, "Request timeout")
 	clientName = flag.String("name", "TestClient", "Client name prefix")

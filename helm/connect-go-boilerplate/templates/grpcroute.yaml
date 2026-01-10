@@ -1,0 +1,19 @@
+{{- if .Values.gateway.enabled -}}
+apiVersion: gateway.networking.k8s.io/v1
+kind: GRPCRoute
+metadata:
+  name: {{ include "connect-go-boilerplate.fullname" . }}-grpc
+  namespace: {{ .Release.Namespace | quote }}
+spec:
+  parentRefs:
+    - name: connect-gw
+  rules:
+    - matches:
+        # - method:
+        #     service: greeter.v1.Greeter
+        # - method:
+        #     service: user.v1.User
+      backendRefs:
+        - name: {{ include "connect-go-boilerplate.fullname" . }}
+          port: {{ .Values.connectGoBoilerplate.service.port }}
+{{- end }}

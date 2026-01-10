@@ -1,0 +1,40 @@
+---
+# EnvoyProxy: The specific hardware/service configuration for Envoy.
+# This is where we tell Envoy Gateway to use NodePort instead of LoadBalancer.
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: EnvoyProxy
+metadata:
+  name: global-proxy-config
+  namespace: envoy-gateway-system
+spec:
+  provider:
+    type: Kubernetes
+    kubernetes:
+      envoyDeployment:
+        container:
+          resources:
+            requests:
+              cpu: 500m
+              memory: 512Mi
+            limits:
+              cpu: 2
+              memory: 2Gi
+      envoyService:
+        # Changed to NodePort for on-premise compatibility. 
+        # You can switch this to LoadBalancer later when MetalLB is ready.
+        type: NodePort
+---
+# GatewayClass: The cluster-wide blueprint.
+# It links to the EnvoyProxy configuration above.
+apiVersion: gateway.networking.k8s.io/v1
+kind: GatewayClass
+metadata:
+  name: envoy-gateway
+spec:
+  controllerName: gateway.envoyproxy.io/gatewayclass-controller
+  parametersRef:
+    group: gateway.envoyproxy.io
+    kind: EnvoyProxy
+    name: global-proxy-config
+    namespace: envoy-gateway-system
+  description: "Standard Envoy Gateway Class for On-Premise (NodePort)"
