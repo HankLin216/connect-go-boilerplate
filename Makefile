@@ -148,7 +148,9 @@ export-realm:
 helm-install:
 	helm upgrade --install connect-go-boilerplate ./helm/connect-go-boilerplate \
 	--set connectGoBoilerplate.image.tag=$(VERSION) \
-	--set connectGoBoilerplate.image.pullPolicy=Never
+	--set connectGoBoilerplate.image.pullPolicy=Never \
+	--create-namespace \
+	--namespace connect-go
 
 .PHONY: full-helm-install
 # build image and install helm chart
@@ -157,7 +159,7 @@ full-helm-install: build-image helm-install
 .PHONY: helm-uninstall
 # uninstall helm chart
 helm-uninstall:
-	helm uninstall connect-go-boilerplate
+	helm uninstall connect-go-boilerplate --namespace connect-go
 
 .PHONY: build-client
 # build simple client

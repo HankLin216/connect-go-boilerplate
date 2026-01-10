@@ -2,7 +2,7 @@
 setlocal
 
 echo [INFO] Uninstalling Helm Chart...
-helm uninstall connect-go-boilerplate
+helm uninstall connect-go-boilerplate --namespace connect-go
 
 if %ERRORLEVEL% NEQ 0 (
     echo [ERROR] Helm uninstall failed.

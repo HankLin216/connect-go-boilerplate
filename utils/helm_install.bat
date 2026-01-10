@@ -46,7 +46,9 @@ REM Install/Upgrade Helm Chart
 echo [INFO] Installing/Upgrading Helm Chart with tag: %GIT_TAG%
 helm upgrade --install connect-go-boilerplate ./helm/connect-go-boilerplate ^
     --set connectGoBoilerplate.image.tag=%GIT_TAG% ^
-    --set connectGoBoilerplate.image.pullPolicy=Never
+    --set connectGoBoilerplate.image.pullPolicy=Never ^
+    --create-namespace ^
+    --namespace connect-go
 
 if %ERRORLEVEL% NEQ 0 (
     echo [ERROR] Helm install failed.
