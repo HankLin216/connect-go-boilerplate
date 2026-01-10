@@ -2,7 +2,7 @@
 apiVersion: gateway.networking.k8s.io/v1
 kind: Gateway
 metadata:
-  name: connect-gw
+  name: {{ .Values.gateway.name }}
   namespace: {{ .Release.Namespace | quote }}
 spec:
   gatewayClassName: {{ .Values.gateway.className | default "envoy-gateway" }}

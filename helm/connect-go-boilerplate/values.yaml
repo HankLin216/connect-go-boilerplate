@@ -3,7 +3,31 @@
 # Gateway Configuration (Global or Shared)
 gateway:
   enabled: true
+  name: connect-gw
   className: envoy-gateway
+
+keycloak:
+  enabled: true
+  name: connect-gw-keycloak
+  instances: 1
+  image:
+    repository: quay.io/keycloak/keycloak
+    tag: 26.0.0
+  admin:
+    secretName: basic-auth
+    username: admin
+    password: admin
+  service:
+    port: 8080
+  db:
+    secretName: keycloak-db-secret
+    host: postgres
+    port: 5432
+    database: keycloak
+    username: postgres
+    password: password 
+  hostname: localhost
+  relativePath: /auth
 
 connectGoBoilerplate:
   # Replica count

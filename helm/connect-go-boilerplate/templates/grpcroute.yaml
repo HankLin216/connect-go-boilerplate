@@ -6,7 +6,7 @@ metadata:
   namespace: {{ .Release.Namespace | quote }}
 spec:
   parentRefs:
-    - name: connect-gw
+    - name: {{ .Values.gateway.name }}
   rules:
     - matches:
         # - method:

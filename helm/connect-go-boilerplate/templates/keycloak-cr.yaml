@@ -1,0 +1,35 @@
+{{- if .Values.keycloak.enabled -}}
+apiVersion: k8s.keycloak.org/v2alpha1
+kind: Keycloak
+metadata:
+  name: {{ .Values.keycloak.name }}
+  namespace: {{ .Release.Namespace | quote }}
+spec:
+  instances: {{ .Values.keycloak.instances }}
+  db:
+    vendor: postgres
+    host: {{ .Values.keycloak.db.host }}
+    port: {{ .Values.keycloak.db.port }}
+    database: {{ .Values.keycloak.db.database }}
+    usernameSecret:
+      name: {{ .Values.keycloak.db.secretName }}
+      key: username
+    passwordSecret:
+      name: {{ .Values.keycloak.db.secretName }}
+      key: password
+  bootstrapAdmin:
+    user:
+      secret: {{ .Values.keycloak.admin.secretName }}
+  http:
+    httpEnabled: true
+    httpPort: {{ .Values.keycloak.service.port }}
+  hostname:
+    hostname: {{ .Values.keycloak.hostname }}
+    strict: false
+    strictBackchannel: false
+  startOptimized: false
+  image: {{ .Values.keycloak.image.repository }}:{{ .Values.keycloak.image.tag }}
+  additionalOptions:
+    - name: http-relative-path
+      value: {{ .Values.keycloak.relativePath }}
+{{- end }}
