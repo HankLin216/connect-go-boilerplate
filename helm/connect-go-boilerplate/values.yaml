@@ -3,6 +3,7 @@
 # Gateway Configuration (Global or Shared)
 gateway:
   enabled: true
+  className: envoy-gateway
 
 connectGoBoilerplate:
   # Replica count

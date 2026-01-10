@@ -1,0 +1,16 @@
+{{- if .Values.gateway.enabled -}}
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: connect-gw
+  namespace: {{ .Release.Namespace | quote }}
+spec:
+  gatewayClassName: {{ .Values.gateway.className | default "envoy-gateway" }}
+  listeners:
+    - name: http
+      protocol: HTTP
+      port: 80
+      allowedRoutes:
+        namespaces:
+          from: Same
+{{- end }}
