@@ -1,0 +1,18 @@
+{{- if .Values.gateway.enabled -}}
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: SecurityPolicy
+metadata:
+  name: {{ .Values.gateway.name }}-jwt-policy
+  namespace: {{ .Release.Namespace | quote }}
+spec:
+  targetRef:
+    group: gateway.networking.k8s.io
+    kind: GRPCRoute
+    name: {{ include "connect-go-boilerplate.fullname" . }}-grpc
+  jwt:
+    providers:
+      - name: keycloak
+        issuer: "http://localhost:30080/auth/realms/{{ .Values.keycloak.realm.name }}"
+        remoteJWKS:
+          uri: "http://{{ .Values.keycloak.name }}-service.{{ .Release.Namespace }}.svc.cluster.local:8080/auth/realms/{{ .Values.keycloak.realm.name }}/protocol/openid-connect/certs"
+{{- end }}
