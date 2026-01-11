@@ -4,6 +4,11 @@ description: A Helm chart for Kubernetes deployment of connect-go-boilerplate ap
 type: application
 version: 0.1.0
 appVersion: "0.1.0"
+dependencies:
+  - name: postgresql
+    version: 18.2.0
+    repository: https://charts.bitnami.com/bitnami
+    condition: postgresql.enabled
 home: https://github.com/HankLin216/connect-go-boilerplate
 sources:
   - https://github.com/HankLin216/connect-go-boilerplate
