@@ -20,9 +20,10 @@ spec:
               cpu: 2
               memory: 2Gi
       envoyService:
-        # Changed to NodePort for on-premise compatibility. 
-        # You can switch this to LoadBalancer later when MetalLB is ready.
-        type: NodePort
+        # Utilizing Rancher Desktop / K3s built-in Service LoadBalancer (svclb/Klipper LB).
+        # This will spin up a DaemonSet that binds to the Host Node specific port (e.g., 30080)
+        # allowing localhost:30080 access directly.
+        type: LoadBalancer
 ---
 # GatewayClass: The cluster-wide blueprint.
 # It links to the EnvoyProxy configuration above.

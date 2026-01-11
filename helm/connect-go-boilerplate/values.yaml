@@ -5,6 +5,9 @@ gateway:
   enabled: true
   name: connect-gw
   className: envoy-gateway
+  # Port for the Gateway Listener (External access)
+  # When using Rancher Desktop/K3s, this port will be bound to the Host machine.
+  port: 30080
 
 keycloak:
   enabled: true
@@ -13,7 +16,7 @@ keycloak:
   hostname: localhost
   relativePath: "/auth"
   realm:
-    name: connect-go-realm
+    name: connect-go
   image:
     repository: quay.io/keycloak/keycloak
     tag: 26.0.5
