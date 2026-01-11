@@ -10,9 +10,13 @@ keycloak:
   enabled: true
   name: connect-gw-keycloak
   instances: 1
+  hostname: localhost
+  relativePath: "/auth"
+  realm:
+    name: connect-go-realm
   image:
     repository: quay.io/keycloak/keycloak
-    tag: 26.0.0
+    tag: 26.0.5
   admin:
     secretName: basic-auth
     username: admin
@@ -27,9 +31,7 @@ keycloak:
     # port: 5432
     # database: keycloak
     # username: postgres
-    # password: password 
-  hostname: localhost
-  relativePath: /auth
+    # password: password
 
 postgresql:
   enabled: true
