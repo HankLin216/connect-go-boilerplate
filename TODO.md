@@ -17,3 +17,20 @@
     - [ ] Extract roles from the JWT `realm_access.roles` or `resource_access.roles` claim in the Go interceptor.
     - [ ] Define permission policies (e.g., `editor` can write, `viewer` can only read).
     - [ ] Apply interceptors/middleware to gRPC/Connect handlers to enforce these policies.
+
+## 4. Envoy Gateway Configuration
+- [x] Integrate Keycloak with Helm
+- [x] Configure SecurityPolicy for JWT validation
+- [x] Fix Issuer Mismatch issues (use localhost:30080)
+- [ ] Implement Envoy Gateway Rate Limiting (Global & Route-level)
+- [ ] Configure Load Balancing Policies (Round Robin, Least Request, etc.)
+- [ ] Add Circuit Breaking & Retry policies
+
+## 5. Distributed Systems Features
+- [ ] **Distributed Locking (Shared Lock)**: Implement a mechanism for coordinating tasks across multiple instances.
+    - [ ] Choose a backend (Redis, PostgreSQL, or Etcd).
+    - [ ] Implement a `DistLocker` interface for Acquire/Release.
+    - [ ] Use cases: Leader election, Cron job coordination, preventing race conditions on critical resources.
+- [ ] **Leader Election**: Implement leader election for high availability and single-writer scenarios.
+    - [ ] Use Kubernetes native Leader Election (via `client-go/tools/leaderelection`) using Leases.
+    - [ ] Ensure only the leader performs specific background tasks (e.g., cron jobs, consuming specific queues).
