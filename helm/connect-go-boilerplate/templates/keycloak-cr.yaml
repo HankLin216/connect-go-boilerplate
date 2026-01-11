@@ -6,6 +6,8 @@ metadata:
   namespace: {{ .Release.Namespace | quote }}
 spec:
   instances: {{ .Values.keycloak.instances }}
+  ingress:
+    enabled: false
 {{- if .Values.postgresql.enabled }}
   db:
     vendor: postgres
