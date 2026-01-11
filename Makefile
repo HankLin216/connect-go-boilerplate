@@ -160,6 +160,7 @@ full-helm-install: build-image helm-install
 # uninstall helm chart
 helm-uninstall:
 	helm uninstall connect-go-boilerplate --namespace connect-go
+	kubectl delete pvc --all -n connect-go
 
 .PHONY: build-client
 # build simple client
