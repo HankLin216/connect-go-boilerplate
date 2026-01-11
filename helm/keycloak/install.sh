@@ -17,8 +17,10 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-echo "Applying Keycloak Operator..."
-kubectl apply -f "${BASE_URL}/kubernetes.yml"
+kubectl create namespace connect-go --dry-run=client -o yaml | kubectl apply -f -
+
+echo "Applying Keycloak Operator to namespace connect-go..."
+kubectl apply -f "${BASE_URL}/kubernetes.yml" --namespace connect-go
 if [ $? -ne 0 ]; then
     echo "Failed to install Keycloak Operator."
     exit 1

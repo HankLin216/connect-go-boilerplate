@@ -6,6 +6,19 @@ metadata:
   namespace: {{ .Release.Namespace | quote }}
 spec:
   instances: {{ .Values.keycloak.instances }}
+{{- if .Values.postgresql.enabled }}
+  db:
+    vendor: postgres
+    host: {{ .Values.postgresql.fullnameOverride }}
+    port: 5432
+    database: {{ .Values.postgresql.auth.database }}
+    usernameSecret:
+      name: {{ .Values.keycloak.db.secretName }}
+      key: username
+    passwordSecret:
+      name: {{ .Values.keycloak.db.secretName }}
+      key: password
+{{- else -}}
   db:
     vendor: postgres
     host: {{ .Values.keycloak.db.host }}
@@ -17,6 +30,7 @@ spec:
     passwordSecret:
       name: {{ .Values.keycloak.db.secretName }}
       key: password
+{{- end }}
   bootstrapAdmin:
     user:
       secret: {{ .Values.keycloak.admin.secretName }}

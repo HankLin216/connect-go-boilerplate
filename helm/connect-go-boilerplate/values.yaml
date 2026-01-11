@@ -21,13 +21,31 @@ keycloak:
     port: 8080
   db:
     secretName: keycloak-db-secret
-    host: postgres
-    port: 5432
-    database: keycloak
-    username: postgres
-    password: password 
+    # host, port, database, username, password will be taken from postgresql section if enabled
+    # manual configuration below is only used if postgresql.enabled is false
+    # host: postgres
+    # port: 5432
+    # database: keycloak
+    # username: postgres
+    # password: password 
   hostname: localhost
   relativePath: /auth
+
+postgresql:
+  enabled: true
+  auth:
+    postgresPassword: password
+    database: keycloak
+    username: postgres
+  fullnameOverride: postgres
+  primary:
+    persistence:
+      size: 1Gi
+    initdb:
+      scripts:
+        init_db.sql: "CREATE DATABASE keycloak;"
+    service:
+      type: NodePort
 
 connectGoBoilerplate:
   # Replica count
