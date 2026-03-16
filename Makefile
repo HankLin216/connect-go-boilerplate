@@ -144,7 +144,7 @@ export-realm:
 	@echo "Realm exported to ./keycloak-realm.json"
 
 .PHONY: helm-install
-# install helm chart without building image
+# install/upgrade app helm chart (without building image)
 helm-install:
 	helm upgrade --install connect-go-boilerplate ./helm/connect-go-boilerplate \
 	--set connectGoBoilerplate.image.tag=$(VERSION) \
@@ -153,14 +153,37 @@ helm-install:
 	--namespace connect-go
 
 .PHONY: full-helm-install
-# build image and install helm chart
+# build image and install app helm chart
 full-helm-install: build-image helm-install
 
+.PHONY: helm-infra
+# install all infrastructure (Envoy Gateway, Keycloak, ELK, Monitoring)
+helm-infra:
+	bash helm/infrastructure/install.sh
+
+.PHONY: helm-infra-select
+# install infrastructure selectively (choose which components to install)
+helm-infra-select:
+	bash helm/infrastructure/install.sh --select
+
 .PHONY: helm-uninstall
-# uninstall helm chart
+# uninstall app helm chart
 helm-uninstall:
 	helm uninstall connect-go-boilerplate --namespace connect-go
-	kubectl delete pvc --all -n connect-go
+
+.PHONY: helm-uninstall-all
+# uninstall app + all infrastructure helm charts
+helm-uninstall-all:
+	-helm uninstall connect-go-boilerplate --namespace connect-go
+	-helm uninstall connect-go-elk --namespace connect-go
+	-helm uninstall connect-go-monitoring --namespace connect-go
+	-helm uninstall kube-prometheus-stack --namespace connect-go
+	-helm uninstall elastic-operator --namespace elastic-system
+	@echo ""
+	@echo "Note: Envoy Gateway and Keycloak Operator are not removed."
+	@echo "  To remove manually:"
+	@echo "    helm uninstall eg -n envoy-gateway-system"
+	@echo "    kubectl delete -f https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/26.0.0/kubernetes/kubernetes.yml -n connect-go"
 
 .PHONY: build-client
 # build simple client

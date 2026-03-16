@@ -1,6 +1,21 @@
 # Default values for connect-go-boilerplate
 
-# Gateway Configuration (Global or Shared)
+# ============================================================================
+# Gateway Configuration
+#
+# For fresh environments (new Gateway per app):
+#   gateway.enabled = true (default)
+#   → This chart creates its own Gateway resource.
+#
+# For existing environments (shared Gateway):
+#   gateway.enabled = false
+#   gateway.name = "shared-gw"
+#   gateway.namespace = "infra"   # optional, if Gateway is in another namespace
+#   → This chart creates only Routes, pointing to the existing Gateway.
+#
+# The GatewayClass + EnvoyProxy are cluster-level, managed by:
+#   helm/infrastructure/envoy-gateway/install.sh
+# ============================================================================
 gateway:
   enabled: true
   name: connect-gw
@@ -8,7 +23,12 @@ gateway:
   # Port for the Gateway Listener (External access)
   # When using Rancher Desktop/K3s, this port will be bound to the Host machine.
   port: 30080
+  # Set this if using an existing Gateway in another namespace (set enabled=false first)
+  namespace: ""
 
+# ============================================================================
+# Keycloak (Identity & Access Management)
+# ============================================================================
 keycloak:
   enabled: true
   name: connect-gw-keycloak
@@ -28,14 +48,10 @@ keycloak:
     port: 8080
   db:
     secretName: keycloak-db-secret
-    # host, port, database, username, password will be taken from postgresql section if enabled
-    # manual configuration below is only used if postgresql.enabled is false
-    # host: postgres
-    # port: 5432
-    # database: keycloak
-    # username: postgres
-    # password: password
 
+# ============================================================================
+# PostgreSQL (Keycloak Database)
+# ============================================================================
 postgresql:
   enabled: true
   auth:
@@ -52,6 +68,9 @@ postgresql:
     service:
       type: NodePort
 
+# ============================================================================
+# Application (connect-go-boilerplate)
+# ============================================================================
 connectGoBoilerplate:
   # Replica count
   replicaCount: 2
@@ -85,7 +104,6 @@ connectGoBoilerplate:
       memory: 256Mi
 
   # Health check - Liveness Probe (gRPC)
-  # Native gRPC health check
   livenessProbe:
     grpc:
       port: 9000
@@ -95,7 +113,6 @@ connectGoBoilerplate:
     failureThreshold: 3
 
   # Health check - Readiness Probe (gRPC)
-  # Native gRPC health check
   readinessProbe:
     grpc:
       port: 9000
@@ -103,3 +120,13 @@ connectGoBoilerplate:
     periodSeconds: 5
     timeoutSeconds: 3
     failureThreshold: 2
+
+# ============================================================================
+# ELK Stack — Managed by separate Helm chart: helm/infrastructure/elk/
+# Install: bash helm/infrastructure/elk/install.sh [NAMESPACE]
+# ============================================================================
+
+# ============================================================================
+# Monitoring — Managed by separate Helm chart: helm/infrastructure/monitoring/
+# Install: bash helm/infrastructure/monitoring/install.sh [NAMESPACE]
+# ============================================================================

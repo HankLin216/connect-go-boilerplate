@@ -76,7 +76,7 @@
 			"type": "shell",
 			"command": ".\\utils\\helm_install.bat",
 			"args": [
-				"${input:helmAction}"
+				"${input:helmInstallAction}"
 			],
 			"problemMatcher": []
 		},
@@ -84,6 +84,9 @@
 			"label": "Helm Uninstall (win)",
 			"type": "shell",
 			"command": ".\\utils\\helm_uninstall.bat",
+			"args": [
+				"${input:helmUninstallAction}"
+			],
 			"problemMatcher": []
 		},
 		{
@@ -117,13 +120,24 @@
 			"description": "Select user action"
 		},
 		{
-			"id": "helmAction",
+			"id": "helmInstallAction",
 			"type": "pickString",
 			"options": [
 				"install",
-				"full-install"
+				"full-install",
+				"infra",
+				"infra-select"
 			],
-			"description": "Select helm action"
+			"description": "Select helm install action: install (app only), full-install (build + app), infra (all infrastructure), infra-select (choose components)"
+		},
+		{
+			"id": "helmUninstallAction",
+			"type": "pickString",
+			"options": [
+				"app",
+				"all"
+			],
+			"description": "Select helm uninstall action: app (app chart only), all (app + infrastructure)"
 		},
 		{
 			"id": "protoDirectory",
