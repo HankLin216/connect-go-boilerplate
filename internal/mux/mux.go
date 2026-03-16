@@ -9,6 +9,10 @@ import (
 	"connectrpc.com/otelconnect"
 	g "github.com/HankLin216/connect-go-boilerplate/api/greeter/v1/greeterv1connect"
 	"github.com/HankLin216/connect-go-boilerplate/internal/service"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/exporters/prometheus"
+	"go.opentelemetry.io/otel/sdk/metric"
 )
 
 var Services = []string{
@@ -17,10 +21,19 @@ var Services = []string{
 }
 
 func New(gs *service.GreeterService) *http.ServeMux {
-	// otel interceptor
-	otelInterceptor, err := otelconnect.NewInterceptor()
+	// prometheus exporter (registers as global MeterProvider)
+	promExporter, err := prometheus.New()
 	if err != nil {
-		// Log error or panic? For now, we panic as it's initialization.
+		panic(err)
+	}
+	meterProvider := metric.NewMeterProvider(metric.WithReader(promExporter))
+
+	// otel interceptor (traces → Jaeger, metrics → Prometheus)
+	otelInterceptor, err := otelconnect.NewInterceptor(
+		otelconnect.WithTracerProvider(otel.GetTracerProvider()),
+		otelconnect.WithMeterProvider(meterProvider),
+	)
+	if err != nil {
 		panic(err)
 	}
 
@@ -28,6 +41,9 @@ func New(gs *service.GreeterService) *http.ServeMux {
 	mux.Handle(g.NewGreeterHandler(gs,
 		connect.WithInterceptors(otelInterceptor),
 	))
+
+	// metrics
+	mux.Handle("/metrics", promhttp.Handler())
 
 	// health
 	checker := h.NewStaticChecker(Services...)

@@ -1,0 +1,37 @@
+# ============================================================================
+# ServiceMonitors for Jaeger and OTel Collector
+# Requires kube-prometheus-stack to be installed.
+# ============================================================================
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "connect-go-tracing.fullname" . }}-jaeger
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    app: jaeger
+    release: {{ .Release.Name | quote }}
+spec:
+  selector:
+    matchLabels:
+      app: jaeger
+  endpoints:
+    - port: admin
+      path: /metrics
+      interval: 15s
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "connect-go-tracing.fullname" . }}-otel-collector
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    app: otel-collector
+    release: {{ .Release.Name | quote }}
+spec:
+  selector:
+    matchLabels:
+      app: otel-collector
+  endpoints:
+    - port: prom-exporter
+      path: /metrics
+      interval: 15s

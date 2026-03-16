@@ -1,0 +1,40 @@
+# Default values for connect-go-tracing
+
+# ============================================================================
+# Gateway Integration
+# ============================================================================
+gateway:
+  enabled: true
+  name: connect-gw
+  # Set this if the Gateway lives in a different namespace (e.g., "infra")
+  namespace: ""
+
+# ============================================================================
+# Jaeger (All-in-One)
+# ============================================================================
+jaeger:
+  image:
+    repository: jaegertracing/all-in-one
+    tag: "1.67.0"
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+# ============================================================================
+# OpenTelemetry Collector
+# ============================================================================
+otelCollector:
+  image:
+    repository: otel/opentelemetry-collector-contrib
+    tag: "0.120.0"
+  resources:
+    limits:
+      cpu: 200m
+      memory: 256Mi
+    requests:
+      cpu: 50m
+      memory: 64Mi

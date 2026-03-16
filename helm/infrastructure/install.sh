@@ -17,6 +17,7 @@ set -e
 #   bash helm/infrastructure/keycloak/install.sh [VERSION] [NAMESPACE]
 #   bash helm/infrastructure/elk/install.sh [NAMESPACE]
 #   bash helm/infrastructure/monitoring/install.sh [NAMESPACE]
+#   bash helm/infrastructure/tracing/install.sh [NAMESPACE]
 #
 # After infrastructure is ready, install the application chart:
 #   helm upgrade --install connect-go-boilerplate ./helm/connect-go-boilerplate \
@@ -88,6 +89,7 @@ ENVOY_STATUS=$(detect_status "Envoy Gateway" "helm status eg -n envoy-gateway-sy
 KEYCLOAK_STATUS=$(detect_status "Keycloak Operator" "kubectl get deployment keycloak-operator -n ${APP_NAMESPACE}")
 ECK_STATUS=$(detect_status "ECK Operator" "helm status elastic-operator -n elastic-system")
 PROMETHEUS_STATUS=$(detect_status "kube-prometheus-stack" "helm status kube-prometheus-stack -n ${APP_NAMESPACE}")
+TRACING_STATUS=$(detect_status "Tracing" "helm status connect-go-tracing -n ${APP_NAMESPACE}")
 
 echo "============================================================"
 echo " Connect-Go-Boilerplate: Infrastructure Installer"
@@ -100,45 +102,56 @@ echo "   1. Envoy Gateway ........... ${ENVOY_STATUS}"
 echo "   2. Keycloak Operator ....... ${KEYCLOAK_STATUS}"
 echo "   3. ECK Operator + ELK ...... ${ECK_STATUS}"
 echo "   4. Prometheus + Monitoring .. ${PROMETHEUS_STATUS}"
+echo "   5. Tracing (Jaeger + OTel) .. ${TRACING_STATUS}"
 echo ""
 
 # --- 1. Envoy Gateway ---
 if should_install "Envoy Gateway" "$ENVOY_STATUS"; then
-    echo ">>> [1/4] Envoy Gateway"
+    echo ">>> [1/5] Envoy Gateway"
     bash "${SCRIPT_DIR}/envoy-gateway/install.sh" "v1.6.0"
     echo ""
 else
-    echo ">>> [1/4] Envoy Gateway — skipped"
+    echo ">>> [1/5] Envoy Gateway — skipped"
     echo ""
 fi
 
 # --- 2. Keycloak Operator ---
 if should_install "Keycloak Operator" "$KEYCLOAK_STATUS"; then
-    echo ">>> [2/4] Keycloak Operator"
+    echo ">>> [2/5] Keycloak Operator"
     bash "${SCRIPT_DIR}/keycloak/install.sh" "26.0.0" "${APP_NAMESPACE}"
     echo ""
 else
-    echo ">>> [2/4] Keycloak Operator — skipped"
+    echo ">>> [2/5] Keycloak Operator — skipped"
     echo ""
 fi
 
 # --- 3. ECK Operator + ELK Stack ---
 if should_install "ECK Operator + ELK Stack" "$ECK_STATUS"; then
-    echo ">>> [3/4] ECK Operator + ELK Stack"
+    echo ">>> [3/5] ECK Operator + ELK Stack"
     bash "${SCRIPT_DIR}/elk/install.sh" "${APP_NAMESPACE}"
     echo ""
 else
-    echo ">>> [3/4] ECK Operator + ELK Stack — skipped"
+    echo ">>> [3/5] ECK Operator + ELK Stack — skipped"
     echo ""
 fi
 
 # --- 4. Prometheus Stack + Monitoring ---
 if should_install "Prometheus + Monitoring" "$PROMETHEUS_STATUS"; then
-    echo ">>> [4/4] Prometheus Stack + Monitoring"
+    echo ">>> [4/5] Prometheus Stack + Monitoring"
     bash "${SCRIPT_DIR}/monitoring/install.sh" "${APP_NAMESPACE}"
     echo ""
 else
-    echo ">>> [4/4] Prometheus + Monitoring — skipped"
+    echo ">>> [4/5] Prometheus + Monitoring — skipped"
+    echo ""
+fi
+
+# --- 5. Tracing (Jaeger + OTel Collector) ---
+if should_install "Tracing (Jaeger + OTel)" "$TRACING_STATUS"; then
+    echo ">>> [5/5] Tracing (Jaeger + OTel Collector)"
+    bash "${SCRIPT_DIR}/tracing/install.sh" "${APP_NAMESPACE}"
+    echo ""
+else
+    echo ">>> [5/5] Tracing — skipped"
     echo ""
 fi
 

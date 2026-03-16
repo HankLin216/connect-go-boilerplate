@@ -122,6 +122,11 @@ connectGoBoilerplate:
     failureThreshold: 2
 
 # ============================================================================
+# Tracing — Managed by separate Helm chart: helm/infrastructure/tracing/
+# Install: bash helm/infrastructure/tracing/install.sh [NAMESPACE]
+# ============================================================================
+
+# ============================================================================
 # ELK Stack — Managed by separate Helm chart: helm/infrastructure/elk/
 # Install: bash helm/infrastructure/elk/install.sh [NAMESPACE]
 # ============================================================================

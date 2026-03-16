@@ -1,0 +1,76 @@
+# ============================================================================
+# Jaeger All-in-One (Traces backend)
+# ============================================================================
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jaeger
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    app: jaeger
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jaeger
+  template:
+    metadata:
+      labels:
+        app: jaeger
+    spec:
+      containers:
+        - name: jaeger
+          image: "{{ .Values.jaeger.image.repository }}:{{ .Values.jaeger.image.tag }}"
+          env:
+            - name: QUERY_BASE_PATH
+              value: /jaeger
+            - name: COLLECTOR_OTLP_ENABLED
+              value: "true"
+          ports:
+            - name: query
+              containerPort: 16686
+              protocol: TCP
+            - name: otlp-grpc
+              containerPort: 4317
+              protocol: TCP
+            - name: otlp-http
+              containerPort: 4318
+              protocol: TCP
+            - name: admin
+              containerPort: 14269
+              protocol: TCP
+          {{- with .Values.jaeger.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          readinessProbe:
+            httpGet:
+              path: /jaeger
+              port: 16686
+            initialDelaySeconds: 5
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: jaeger
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    app: jaeger
+spec:
+  type: ClusterIP
+  ports:
+    - name: query
+      port: 16686
+      targetPort: 16686
+    - name: otlp-grpc
+      port: 4317
+      targetPort: 4317
+    - name: otlp-http
+      port: 4318
+      targetPort: 4318
+    - name: admin
+      port: 14269
+      targetPort: 14269
+  selector:
+    app: jaeger
