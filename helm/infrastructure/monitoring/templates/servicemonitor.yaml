@@ -1,0 +1,21 @@
+{{- if .Values.serviceMonitor.enabled -}}
+# ServiceMonitor tells Prometheus to scrape the connect-go-boilerplate application.
+# Requires the Prometheus Operator (kube-prometheus-stack) to be installed.
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "connect-go-monitoring.fullname" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    app: {{ .Values.serviceMonitor.appLabel }}
+    release: {{ .Values.serviceMonitor.releaseLabel }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Values.serviceMonitor.appLabel }}
+      release: {{ .Values.serviceMonitor.releaseLabel }}
+  endpoints:
+    - port: {{ .Values.serviceMonitor.portName }}
+      path: {{ .Values.serviceMonitor.path }}
+      interval: {{ .Values.serviceMonitor.interval }}
+{{- end }}

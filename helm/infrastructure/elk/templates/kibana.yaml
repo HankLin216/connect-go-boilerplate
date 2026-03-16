@@ -1,0 +1,29 @@
+apiVersion: kibana.k8s.elastic.co/v1
+kind: Kibana
+metadata:
+  name: kibana
+  namespace: {{ .Release.Namespace | quote }}
+spec:
+  version: {{ .Values.kibana.version }}
+  count: {{ .Values.kibana.count }}
+  elasticsearchRef:
+    name: elasticsearch
+  http:
+    tls:
+      selfSignedCertificate:
+        disabled: true
+  config:
+    server.basePath: "/kibana"
+    server.rewriteBasePath: true
+    server.ssl.enabled: false # Disable Kibana's own TLS (run as HTTP)
+    elasticsearch.hosts: ["http://elasticsearch-es-http:9200"] # Force HTTP
+    elasticsearch.ssl.verificationMode: none # Disable SSL verification
+  podTemplate:
+    spec:
+      containers:
+        - name: kibana
+          env:
+            - name: SERVER_BASEPATH
+              value: "/kibana"
+            - name: SERVER_REWRITEBASEPATH
+              value: "true"

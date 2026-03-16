@@ -1,0 +1,44 @@
+{{- if .Values.filebeat.enabled -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: filebeat-config
+  namespace: {{ .Release.Namespace | quote }}
+data:
+  filebeat.yml: |
+    filebeat.autodiscover:
+      providers:
+        - type: kubernetes
+          node: ${NODE_NAME}
+          hints.enabled: false
+          # Improve registry file management to prevent it from growing too large
+          clean_removed: true
+          clean_inactive: 72h
+          templates:
+            # Adapt the docker condition to kubernetes label/name condition
+            - condition:
+                contains:
+                  kubernetes.container.name: {{ .Values.filebeat.targetContainerName | quote }}
+              config:
+                - type: container
+                  paths:
+                    - /var/log/containers/*${data.kubernetes.container.id}.log
+                  processors:
+                    - add_tags:
+                        tags: [json]
+                        target: "parser_type"
+                    - decode_json_fields:
+                        fields:
+                          - message
+                        target: ""
+                        overwrite_keys: true
+                        add_error_key: true
+                        expand_keys: true
+
+    processors:
+      - add_cloud_metadata:
+      - add_host_metadata:
+
+    output.logstash:
+      hosts: ["logstash:5044"]
+{{- end }}

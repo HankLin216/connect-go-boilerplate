@@ -1,0 +1,66 @@
+# Default values for connect-go-elk
+
+# ============================================================================
+# Gateway Integration
+#
+# For fresh environments (Gateway in same namespace):
+#   gateway.enabled = true (default), gateway.namespace = "" (empty)
+#
+# For existing environments (shared Gateway in another namespace):
+#   gateway.namespace = "infra"
+#   → Kibana HTTPRoute parentRefs point to the Gateway in that namespace.
+# ============================================================================
+gateway:
+  enabled: true
+  name: connect-gw
+  # Set this if the Gateway lives in a different namespace (e.g., "infra")
+  namespace: ""
+
+# ============================================================================
+# Elasticsearch
+# ============================================================================
+elasticsearch:
+  version: 8.16.1
+  count: 1
+  persistence:
+    enabled: true
+    size: 5Gi
+    # storageClass: "" # Leave empty to use default storage class
+  auth:
+    # The superuser name is 'elastic'. Do not change this unless you configure custom realms.
+    username: "elastic"
+    password: "admin"
+  resources:
+    limits:
+      memory: 2Gi
+    requests:
+      memory: 1Gi
+
+# ============================================================================
+# Kibana
+# ============================================================================
+kibana:
+  version: 8.16.1
+  count: 1
+
+# ============================================================================
+# Logstash
+# ============================================================================
+logstash:
+  enabled: true
+  image: docker.elastic.co/logstash/logstash:8.16.1
+  replicas: 1
+  resources:
+    limits:
+      memory: 1Gi
+    requests:
+      memory: 512Mi
+
+# ============================================================================
+# Filebeat
+# ============================================================================
+filebeat:
+  enabled: true
+  image: docker.elastic.co/beats/filebeat:8.16.1
+  # Container name to filter logs from (used in autodiscover config)
+  targetContainerName: connect-go-boilerplate

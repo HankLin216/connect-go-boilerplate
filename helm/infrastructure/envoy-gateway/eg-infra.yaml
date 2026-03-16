@@ -1,0 +1,51 @@
+# ============================================================================
+# Envoy Gateway Infrastructure Resources (Cluster-Level)
+#
+# Applied by install.sh:
+#   bash helm/infrastructure/envoy-gateway/install.sh [VERSION]
+#
+# To change the Service Type, edit the envoyService.type field below directly.
+#
+# Note: The Gateway resource (namespace-scoped) is managed by the
+# application Helm chart, NOT by this file.
+# ============================================================================
+---
+# EnvoyProxy: The specific hardware/service configuration for Envoy.
+# Service Type Options:
+#   - LoadBalancer: Use with Rancher Desktop / K3s (svclb/Klipper LB binds host port directly)
+#   - NodePort: Use for bare-metal or when LoadBalancer is not available
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: EnvoyProxy
+metadata:
+  name: global-proxy-config
+  namespace: envoy-gateway-system
+spec:
+  provider:
+    type: Kubernetes
+    kubernetes:
+      envoyDeployment:
+        container:
+          resources:
+            requests:
+              cpu: 500m
+              memory: 512Mi
+            limits:
+              cpu: 2
+              memory: 2Gi
+      envoyService:
+        type: LoadBalancer   # Options: LoadBalancer | NodePort
+---
+# GatewayClass: The cluster-wide blueprint.
+# It links to the EnvoyProxy configuration above.
+apiVersion: gateway.networking.k8s.io/v1
+kind: GatewayClass
+metadata:
+  name: envoy-gateway
+spec:
+  controllerName: gateway.envoyproxy.io/gatewayclass-controller
+  parametersRef:
+    group: gateway.envoyproxy.io
+    kind: EnvoyProxy
+    name: global-proxy-config
+    namespace: envoy-gateway-system
+  description: "Envoy Gateway Class"

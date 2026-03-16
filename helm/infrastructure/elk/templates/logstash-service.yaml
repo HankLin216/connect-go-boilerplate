@@ -1,0 +1,15 @@
+{{- if .Values.logstash.enabled -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: logstash
+  namespace: {{ .Release.Namespace | quote }}
+spec:
+  selector:
+    app: logstash
+  ports:
+    - protocol: TCP
+      port: 5044
+      targetPort: 5044
+      name: beats
+{{- end }}

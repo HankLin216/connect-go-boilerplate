@@ -1,0 +1,41 @@
+apiVersion: elasticsearch.k8s.elastic.co/v1
+kind: Elasticsearch
+metadata:
+  name: elasticsearch
+  namespace: {{ .Release.Namespace | quote }}
+spec:
+  version: {{ .Values.elasticsearch.version }}
+  nodeSets:
+  - name: default
+    count: {{ .Values.elasticsearch.count }}
+    config:
+      # Enable security but minimize restrictions for development
+      # xpack.security.enabled: true (default)
+      
+      # Disable SSL for HTTP to make it easier to access
+      xpack.security.http.ssl.enabled: false
+      
+      node.store.allow_mmap: false
+    podTemplate:
+      spec:
+        containers:
+        - name: elasticsearch
+          resources:
+            requests:
+              memory: {{ .Values.elasticsearch.resources.requests.memory }}
+            limits:
+              memory: {{ .Values.elasticsearch.resources.limits.memory }}
+    {{- if .Values.elasticsearch.persistence.enabled }}
+    volumeClaimTemplates:
+    - metadata:
+        name: elasticsearch-data # Do not change this name, ECK expects it for data volume
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: {{ .Values.elasticsearch.persistence.size }}
+        {{- if .Values.elasticsearch.persistence.storageClass }}
+        storageClassName: {{ .Values.elasticsearch.persistence.storageClass }}
+        {{- end }}
+    {{- end }}

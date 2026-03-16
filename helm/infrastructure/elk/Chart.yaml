@@ -1,0 +1,12 @@
+apiVersion: v2
+name: connect-go-elk
+description: ELK Stack (Elasticsearch + Kibana + Logstash + Filebeat) for connect-go-boilerplate
+type: application
+version: 0.1.0
+appVersion: "8.16.1"
+home: https://github.com/HankLin216/connect-go-boilerplate
+sources:
+  - https://github.com/HankLin216/connect-go-boilerplate
+maintainers:
+  - name: Hank Lin
+    email: hanklin21000@gmail.com

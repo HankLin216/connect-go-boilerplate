@@ -1,0 +1,30 @@
+{{- if .Values.logstash.enabled -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: logstash-config
+  namespace: {{ .Release.Namespace | quote }}
+data:
+  logstash.conf: |
+    input {
+      beats {
+        port => 5044
+      }
+    }
+
+    filter {
+      # Add your filters here
+    }
+
+    output {
+      elasticsearch {
+        hosts => ["http://elasticsearch-es-http:9200"] 
+        user => "${ELASTICSEARCH_USERNAME}"
+        password => "${ELASTICSEARCH_PASSWORD}"
+        # Note: ECK creates a service named <name>-es-http. 
+        # Since we named the ES CR "elasticsearch", the service is "elasticsearch-es-http".
+        index => "connect-go-%{+YYYY.MM.dd}"
+      }
+      stdout { codec => rubydebug }
+    }
+{{- end }}

@@ -1,0 +1,47 @@
+# Default values for connect-go-monitoring
+
+# ============================================================================
+# Gateway Integration
+#
+# For fresh environments (Gateway in same namespace):
+#   gateway.enabled = true (default), gateway.namespace = "" (empty)
+#
+# For existing environments (shared Gateway in another namespace):
+#   gateway.namespace = "infra"
+#   → HTTPRoutes parentRefs point to the Gateway in that namespace.
+# ============================================================================
+gateway:
+  enabled: true
+  name: connect-gw
+  # Set this if the Gateway lives in a different namespace (e.g., "infra")
+  namespace: ""
+
+# ============================================================================
+# Grafana
+# ============================================================================
+grafana:
+  # Service name of Grafana (default from kube-prometheus-stack)
+  serviceName: kube-prometheus-stack-grafana
+  port: 80
+
+# ============================================================================
+# Prometheus
+# ============================================================================
+prometheus:
+  # Service name of Prometheus (default from kube-prometheus-stack)
+  serviceName: kube-prometheus-stack-prometheus
+  port: 9090
+
+# ============================================================================
+# ServiceMonitor
+# Configures Prometheus to scrape the connect-go-boilerplate application.
+# ============================================================================
+serviceMonitor:
+  enabled: true
+  # Must match the labels on the connect-go-boilerplate Service
+  appLabel: connect-go-boilerplate
+  releaseLabel: connect-go-boilerplate
+  # Port name defined in the connect-go-boilerplate Service
+  portName: connect-go-boilerplate
+  path: /metrics
+  interval: 15s
