@@ -1,9 +1,10 @@
 FROM golang:latest AS builder
 
 ARG ENVIRONMENT=Development
+ARG GOPROXY=https://proxy.golang.org,direct
 ENV APP_ENV=${ENVIRONMENT}
-# Set GOPROXY to direct to bypass module proxies, which can cause issues in some corporate networks.
-ENV GOPROXY=direct
+# Use the public Go module mirror first so vanity imports do not require direct host resolution.
+ENV GOPROXY=${GOPROXY}
 
 # Copy self-signed certificate if it exists and update trust store
 COPY certs/ /usr/local/share/ca-certificates/
